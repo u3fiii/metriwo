@@ -11,6 +11,7 @@ export const FEATURE_TABS = [
     id: 'analytics',
     label: 'Analytics',
     Icon: BarChart3,
+    mobileCardBg: '#E6E2FF',
     theme: {
       accent: '#5B3AFF',
       tabBg: 'rgba(91, 58, 255, 0.12)',
@@ -38,6 +39,7 @@ export const FEATURE_TABS = [
     id: 'scheduler',
     label: 'Scheduler',
     Icon: CalendarClock,
+    mobileCardBg: '#C8F5DC',
     theme: {
       accent: '#2563EB',
       tabBg: 'rgba(37, 99, 235, 0.12)',
@@ -65,6 +67,7 @@ export const FEATURE_TABS = [
     id: 'engagement',
     label: 'Engagement',
     Icon: MessageCircle,
+    mobileCardBg: '#F9D0E8',
     theme: {
       accent: '#DB2777',
       tabBg: 'rgba(219, 39, 119, 0.12)',
@@ -92,6 +95,7 @@ export const FEATURE_TABS = [
     id: 'competitors',
     label: 'Competitors',
     Icon: Radar,
+    mobileCardBg: '#FEEAB8',
     theme: {
       accent: '#D97706',
       tabBg: 'rgba(217, 119, 6, 0.12)',
@@ -119,6 +123,7 @@ export const FEATURE_TABS = [
     id: 'reports',
     label: 'Reports',
     Icon: FileBarChart,
+    mobileCardBg: '#C6F6E3',
     theme: {
       accent: '#059669',
       tabBg: 'rgba(5, 150, 105, 0.12)',

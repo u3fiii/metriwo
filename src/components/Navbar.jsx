@@ -5,11 +5,31 @@ import logoHeader from '../assets/logo-header.png'
 const DOT_EASING = 'cubic-bezier(0.55, -0.15, 0.25, 1.35)'
 
 const NAV_LINKS = [
-  { label: 'Home', href: '#' },
-  { label: 'Features', href: '#features' },
-  { label: 'Platforms', href: '#platforms' },
-  { label: 'Pricing', href: '#pricing' },
+  { label: 'Home', href: '#', sectionId: null },
+  { label: 'Features', href: '#features', sectionId: 'features' },
+  { label: 'Platforms', href: '#platforms', sectionId: 'platforms' },
+  { label: 'Pricing', href: '#pricing', sectionId: 'pricing' },
 ]
+
+const SCROLL_SPY_OFFSET = 140
+
+function getSectionTop(element) {
+  return element.getBoundingClientRect().top + window.scrollY
+}
+
+function getActiveIndexFromScroll() {
+  const marker = window.scrollY + SCROLL_SPY_OFFSET
+  let activeIndex = 0
+
+  NAV_LINKS.forEach((link, index) => {
+    if (!link.sectionId) return
+    const section = document.getElementById(link.sectionId)
+    if (!section) return
+    if (marker >= getSectionTop(section)) activeIndex = index
+  })
+
+  return activeIndex
+}
 
 export default function Navbar() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -52,8 +72,10 @@ export default function Navbar() {
       }
 
       lastScrollY.current = y
+      setActiveIndex(getActiveIndexFromScroll())
     }
 
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])

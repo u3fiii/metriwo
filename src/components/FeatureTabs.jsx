@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FEATURE_TABS } from './features/featureTabsData'
 import FeaturePanelArtwork from './features/FeaturePanelArtwork'
+import FeatureMobileCarousel from './features/FeatureMobileCarousel'
 
 export default function FeatureTabs() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -21,60 +22,61 @@ export default function FeatureTabs() {
           >
             Everything you need to grow on social
           </h2>
-          <p className="mt-3 text-sm font-light text-zinc-600 sm:text-base">
-            One platform for analytics, scheduling, engagement, competitor tracking,
-            and client-ready reports.
+          <p className="mt-3 text-xl font-medium text-zinc-600 sm:text-base">
+            Four powerful tools. One intelligent platform.
           </p>
         </div>
 
-        <div
-          className="mt-10 flex flex-wrap items-center justify-center gap-2 sm:mt-12 sm:gap-2.5"
-          role="tablist"
-          aria-label="Feature categories"
-        >
-          {FEATURE_TABS.map((tab, index) => {
-            const isActive = index === activeIndex
-            const TabIcon = tab.Icon
+        {/* Mobile: Embla carousel */}
+        <div className="lg:hidden">
+          <FeatureMobileCarousel />
+        </div>
 
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`feature-panel-${tab.id}`}
-                id={`feature-tab-${tab.id}`}
-                onClick={() => setActiveIndex(index)}
-                className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-300 ease-out sm:px-5"
-                style={
-                  isActive
-                    ? {
-                        backgroundColor: tab.theme.tabBg,
-                        color: tab.theme.accent,
-                      }
-                    : {
-                        backgroundColor: 'transparent',
-                        color: '#71717a',
-                      }
-                }
-              >
-                <TabIcon
-                  className="h-4 w-4 shrink-0 transition-colors duration-300"
-                  strokeWidth={2.25}
-                  style={{ color: isActive ? tab.theme.accent : '#a1a1aa' }}
-                  aria-hidden
-                />
-                <span>{tab.label}</span>
-              </button>
-            )
-          })}
+        {/* Desktop: tab bar + panel */}
+        <div className="mt-10 hidden justify-center sm:mt-12 lg:flex">
+          <div
+            className="inline-flex max-w-full flex-wrap items-center gap-1 rounded-[12px] border-2 border-zinc-200 bg-white p-1.5"
+            role="tablist"
+            aria-label="Feature categories"
+          >
+            {FEATURE_TABS.map((tab, index) => {
+              const isActive = index === activeIndex
+              const TabIcon = tab.Icon
+
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`feature-panel-${tab.id}`}
+                  id={`feature-tab-${tab.id}`}
+                  onClick={() => setActiveIndex(index)}
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-300 ease-out sm:px-5 ${
+                    isActive
+                      ? 'bg-[#5B3AFF] text-white'
+                      : 'bg-transparent text-zinc-900 hover:bg-zinc-50'
+                  }`}
+                >
+                  <TabIcon
+                    className={`h-4 w-4 shrink-0 transition-colors duration-300 ${
+                      isActive ? 'text-white' : 'text-zinc-900'
+                    }`}
+                    strokeWidth={2.25}
+                    aria-hidden
+                  />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         <div
           id={`feature-panel-${active.id}`}
           role="tabpanel"
           aria-labelledby={`feature-tab-${active.id}`}
-          className="feature-panel mt-8 overflow-hidden rounded-3xl ring-1 transition-[background,box-shadow] duration-500 ease-out sm:mt-10"
+          className="feature-panel mt-8 hidden overflow-hidden rounded-3xl ring-1 transition-[background,box-shadow] duration-500 ease-out sm:mt-10 lg:block"
           style={{
             background: theme.panelBg,
             boxShadow: `0 24px 64px -12px ${theme.panelRing}`,

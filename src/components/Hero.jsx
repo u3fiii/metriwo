@@ -98,6 +98,47 @@ const MOCK_ACCOUNTS = {
   ],
 }
 
+const FAKE_RESULT_TEMPLATES = [
+  { suffix: '', followers: '2.4M' },
+  { suffix: ' Official', followers: '890K' },
+  { suffix: ' HQ', followers: '156K' },
+  { suffix: ' Live', followers: '42K' },
+]
+
+function slugFromQuery(query) {
+  const slug = query.toLowerCase().replace(/[^a-z0-9]/g, '')
+  return slug || 'creator'
+}
+
+function getDisplayAccounts(query, platformId) {
+  const q = query.trim()
+  if (!q) return []
+
+  const base = MOCK_ACCOUNTS[platformId] ?? []
+  const lower = q.toLowerCase()
+  const matches = base.filter(
+    (a) =>
+      a.username.toLowerCase().includes(lower) || a.name.toLowerCase().includes(lower),
+  )
+
+  const results = [...matches]
+  const slug = slugFromQuery(q)
+
+  for (let i = 0; results.length < 3 && i < FAKE_RESULT_TEMPLATES.length; i++) {
+    const template = FAKE_RESULT_TEMPLATES[i]
+    const username = i === 0 ? slug : `${slug}${i + 1}`
+    if (results.some((r) => r.username === username)) continue
+
+    results.push({
+      username,
+      name: `${q}${template.suffix}`,
+      followers: template.followers,
+    })
+  }
+
+  return results.slice(0, 4)
+}
+
 export default function Hero() {
   const { text: typewriterText } = useTypewriter(PLATFORMS.map((p) => p.typewriter))
 
@@ -109,14 +150,7 @@ export default function Hero() {
   const searchRef = useRef(null)
   const platformRef = useRef(null)
 
-  const accounts = MOCK_ACCOUNTS[platform.id] ?? []
-  const filteredAccounts = query.trim()
-    ? accounts.filter(
-        (a) =>
-          a.username.toLowerCase().includes(query.toLowerCase()) ||
-          a.name.toLowerCase().includes(query.toLowerCase()),
-      )
-    : accounts
+  const displayAccounts = getDisplayAccounts(query, platform.id)
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -149,10 +183,10 @@ export default function Hero() {
         <HeroArtwork />
 
         {/* Title, subtitle, search — right */}
-        <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left">
+        <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left lg:gap-2">
           <h1 className="text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:text-2xl">
             Scale your brand on{' '}
-            <span className="inline-block min-w-[11ch] text-left font-bold text-zinc-900 lg:mt-2 lg:text-6xl">
+            <span className="inline-block min-w-[11ch] text-left font-bold text-zinc-900 lg:mt-2 lg:text-7xl">
               {typewriterText}
               <span
                 className="ml-0.5 inline-block w-[3px] bg-zinc-900 align-middle "
@@ -173,7 +207,7 @@ export default function Hero() {
             ref={searchRef}
             className="relative mt-5 w-full max-w-[445px] overflow-visible sm:mt-6"
           >
-            <div className="flex w-full items-center gap-2 rounded-lg bg-[#f1f1f350] py-2 pl-4 pr-2 shadow-[0_8px_40px_rgba(0,0,0,0.08)] ring-1 ring-zinc-200/80 transition-[background-color,box-shadow] duration-300 ease-in-out hover:ring-[3px] hover:ring-zinc-300/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5B3AFF] focus-within:shadow-[0_8px_32px_rgba(91,58,255,0.12)]">
+            <div className="flex w-full items-center gap-2 rounded-lg bg-[#ffffff60] py-2 pl-4 pr-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-zinc-200/80 transition-[background-color,box-shadow,ring-color,ring-width] duration-300 ease-in-out hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)] hover:ring-[3px] hover:ring-zinc-300/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5B3AFF]">
               <Search
                 className="h-[18px] w-[18px] shrink-0 text-zinc-400"
                 strokeWidth={2}
@@ -212,7 +246,7 @@ export default function Hero() {
                 </button>
 
                 {platformOpen && (
-                  <ul className="absolute right-0 top-full z-20 mt-2 min-w-[200px] rounded-lg bg-white p-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100">
+                  <ul className="absolute left-0 top-full z-20 mt-2 w-full min-w-0 rounded-lg bg-white p-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100">
                     {PLATFORMS.map((p) => (
                       <li key={p.id}>
                         <button
@@ -240,10 +274,10 @@ export default function Hero() {
             </div>
 
             {/* Accounts dropdown */}
-            {accountsOpen && filteredAccounts.length > 0 && (
+            {accountsOpen && displayAccounts.length > 0 && (
               <ul className="absolute left-0 right-0 top-full z-10 mt-2 max-h-64 overflow-auto rounded-lg bg-white p-1 text-left shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100">
-                {filteredAccounts.map((account) => (
-                  <li key={account.username}>
+                {displayAccounts.map((account, index) => (
+                  <li key={`${account.username}-${index}`}>
                     <button
                       type="button"
                       onClick={() => selectAccount(account)}
@@ -267,12 +301,6 @@ export default function Hero() {
                   </li>
                 ))}
               </ul>
-            )}
-
-            {accountsOpen && query.trim() && filteredAccounts.length === 0 && (
-              <p className="absolute left-0 right-0 top-full mt-2 rounded-lg bg-white px-4 py-3 text-sm font-light text-zinc-500 shadow-lg ring-1 ring-zinc-100">
-                No accounts found for &quot;{query}&quot; on {platform.label}
-              </p>
             )}
 
             {/* Selected account preview */}
