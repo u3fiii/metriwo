@@ -183,31 +183,27 @@ export default function Hero() {
 
         {/* Title, subtitle, search — right */}
         <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left lg:gap-2">
-          <h1 className="flex flex-col items-center gap-5 overflow-visible text-center text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:block lg:gap-0 lg:text-left lg:text-2xl">
+          <h1 className="flex flex-col items-center gap-5 overflow-visible text-center text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:block lg:gap-0 lg:text-left lg:text-2xl lg:leading-normal">
             <span className="lg:inline">Scale your brand on </span>
             <span
-              className="typewriter-slot relative mx-auto inline-block shrink-0 overflow-visible text-center font-bold lg:mx-0 lg:mt-2 lg:text-left"
+              className="typewriter-slot mx-auto inline-grid shrink-0 grid-cols-1 grid-rows-1 overflow-visible text-center font-bold lg:mx-0 lg:mt-2 lg:text-left"
               aria-live="polite"
               aria-atomic="true"
             >
               {/* Invisible sizer — locks width & height (no shift while typing) */}
               <span
-                className="invisible inline-flex items-baseline whitespace-nowrap text-[40px] leading-[1.2] pb-[0.12em] lg:text-7xl lg:leading-none lg:pb-0"
+                className="invisible col-start-1 row-start-1 inline-flex items-baseline whitespace-nowrap text-[40px] leading-[1.25] pb-[0.14em] lg:text-7xl lg:leading-[1.2] lg:pb-[0.2em]"
                 aria-hidden
               >
                 {TYPEWRITER_MAX_LABEL}
                 <span className="ml-0.5 inline-block w-[3px] shrink-0" />
               </span>
-              {/* Visible layer — absolute so partial text never changes box size */}
-              <span className="absolute inset-0 inline-flex items-baseline justify-center whitespace-nowrap text-[40px] leading-[1.2] pb-[0.12em] lg:justify-start lg:text-7xl lg:leading-none lg:pb-0">
+              {/* Visible layer — same grid cell as sizer */}
+              <span className="col-start-1 row-start-1 inline-flex items-baseline justify-center overflow-visible whitespace-nowrap text-[40px] leading-[1.25] lg:justify-start lg:text-7xl lg:leading-[1.2]">
                 <span
-                  className="inline-block transition-[background-image] duration-300"
+                  className="typewriter-gradient-text transition-[background-image] duration-300"
                   style={{
                     backgroundImage: typewriterPlatform.typewriterGradient,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    color: 'transparent',
-                    WebkitTextFillColor: 'transparent',
                   }}
                 >
                   {typewriterText}

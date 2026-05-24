@@ -24,6 +24,28 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* Pointer on all clickable controls site-wide */
+button:not(:disabled),
+[type='button']:not(:disabled),
+[type='submit']:not(:disabled),
+[type='reset']:not(:disabled),
+[role='button']:not([aria-disabled='true']),
+a[href],
+label[for],
+select:not(:disabled),
+summary,
+[role='tab'],
+[type='checkbox']:not(:disabled),
+[type='radio']:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled,
+[disabled] {
+  cursor: not-allowed;
+}
+
 .trusted-brand-logo {
   height: 2rem;
   width: auto;
@@ -56,6 +78,25 @@ body::-webkit-scrollbar {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Hero typewriter — room for descenders (e.g. Instagram “g”) with gradient text */
+.typewriter-gradient-text {
+  display: inline-block;
+  overflow: visible;
+  line-height: 1.25;
+  padding-bottom: 0.14em;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+@media (min-width: 1024px) {
+  .typewriter-gradient-text {
+    line-height: 1.2;
+    padding-bottom: 0.2em;
   }
 }
 

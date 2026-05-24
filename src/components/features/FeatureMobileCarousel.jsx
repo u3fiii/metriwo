@@ -119,7 +119,7 @@ export default function FeatureMobileCarousel() {
               aria-selected={isActive}
               aria-label={`Go to ${tab.label}`}
               onClick={() => scrollTo(index)}
-              className={`h-2 rounded-full transition-all duration-300 ease-out ${
+              className={`h-2 cursor-pointer rounded-full transition-all duration-300 ease-out ${
                 isActive ? 'w-6 bg-[#5B3AFF]' : 'w-2 bg-zinc-300'
               }`}
             />
