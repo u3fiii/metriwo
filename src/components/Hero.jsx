@@ -186,9 +186,9 @@ export default function Hero() {
         <HeroArtwork />
 
         {/* Title, subtitle, search — right */}
-        <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left lg:gap-2">
+        <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left ">
           <h1 className="flex flex-col items-center gap-5 overflow-visible text-center text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:block lg:gap-0 lg:text-left lg:text-2xl lg:leading-normal">
-            <span className="lg:inline">Scale your brand on </span>
+            <span className="font-semibold lg:inline">Scale your brand on </span>
             <span
               className="typewriter-slot mx-auto inline-grid shrink-0 grid-cols-1 grid-rows-1 overflow-visible text-center font-bold lg:mx-0 lg:mt-2 lg:text-left"
               aria-live="polite"
@@ -225,7 +225,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="mt-1.5 max-w-md text-[22px] font-normal leading-snug text-zinc-800 sm:mt-2 sm:text-[34px] lg:mt-1 lg:text-[22px]">
+          <p className="hero-subtitle max-w-md sm:mt-2 lg:mb-3">
             The only all-in-one social management tool you&apos;ll ever need
           </p>
 
@@ -270,7 +270,6 @@ export default function Hero() {
                     aria-hidden
                   />
                 </button>
-
               </div>
             </div>
 
@@ -331,7 +330,6 @@ export default function Hero() {
                 ))}
               </ul>
             )}
-
           </div>
         </div>
       </div>

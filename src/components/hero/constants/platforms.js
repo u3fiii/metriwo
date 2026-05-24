@@ -45,7 +45,7 @@ export const PLATFORMS = [
   {
     id: 'linkedin',
     label: 'LinkedIn',
-    typewriter: 'LinkedIn',
+    typewriter: 'Linkedin',
     color: '#0A66C2',
     typewriterGradient:
       'linear-gradient(135deg, #004182 0%, #0a66c2 50%, #378fe9 100%)',

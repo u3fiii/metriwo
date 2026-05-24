@@ -69,11 +69,11 @@ export default function PlatformsSection() {
         <div className="mx-auto max-w-2xl text-center">
           <h2
             id="platforms-heading"
-            className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl lg:text-4xl"
+            className="section-title"
           >
             Built for every platform you care about
           </h2>
-          <p className="mt-3 text-sm font-light text-zinc-600 sm:text-base">
+          <p className="section-subtitle">
             Deep platform expertise, not surface-level integrations.
           </p>
           <button

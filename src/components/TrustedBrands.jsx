@@ -42,7 +42,7 @@ export default function TrustedBrands() {
       <div className="mx-auto max-w-6xl">
         <h2
           id="trusted-brands-title"
-          className="mb-10 text-center text-[18px] font-semibold text-gray-900"
+          className="section-title mb-10 text-center"
         >
           Trusted by leading Brands
         </h2>

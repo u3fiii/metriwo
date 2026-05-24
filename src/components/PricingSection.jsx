@@ -14,11 +14,11 @@ export default function PricingSection() {
         <div className="mx-auto max-w-2xl text-center">
           <h2
             id="pricing-heading"
-            className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl lg:text-4xl"
+            className="section-title"
           >
             Flexible pricing for everyone
           </h2>
-          <p className="mt-3 text-sm font-light text-zinc-600 sm:text-base">
+          <p className="section-subtitle">
             Choose a plan that fits you and your budget, no hidden fees.
           </p>
         </div>

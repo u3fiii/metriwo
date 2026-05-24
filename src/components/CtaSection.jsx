@@ -15,14 +15,11 @@ export default function CtaSection() {
           aria-hidden
         />
 
-        <h2
-          id="cta-heading"
-          className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl lg:text-[2.75rem] lg:leading-tight"
-        >
+        <h2 id="cta-heading" className="section-title">
           Stop Guessing. Start Growing.
         </h2>
 
-        <p className="mt-4 max-w-lg text-sm font-normal text-zinc-600 sm:text-base">
+        <p className="section-subtitle max-w-lg">
           Join over 10,000 brands using Metriwo to scale their social media presence.
         </p>
 

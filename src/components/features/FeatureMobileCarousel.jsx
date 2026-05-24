@@ -112,12 +112,8 @@ export default function FeatureMobileCarousel() {
                 className="feature-mobile-card flex h-full flex-col items-center rounded-[28px] px-5 pb-8 pt-8 text-center sm:px-6"
                 style={{ backgroundColor: tab.mobileCardBg }}
               >
-                <h3 className="text-xl font-bold leading-snug text-zinc-900">
-                  {tab.content.title}
-                </h3>
-                <p className="mt-3 text-sm font-normal leading-relaxed text-zinc-600">
-                  {tab.content.description}
-                </p>
+                <h3 className="section-title">{tab.content.title}</h3>
+                <p className="section-subtitle mt-3">{tab.content.description}</p>
                 <button
                   type="button"
                   className="mt-6 rounded-full bg-zinc-900 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
