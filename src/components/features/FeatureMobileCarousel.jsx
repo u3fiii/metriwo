@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { FEATURE_TABS } from './featureTabsData'
 
-const SLIDE_WIDTH_RATIO = 0.9
+/** Visible sliver of prev/next slide on each side (px). */
+const SLIDE_PEEK_PX = 28
+const AUTOPLAY_MS = 7000
 
 export default function FeatureMobileCarousel() {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -13,14 +15,14 @@ export default function FeatureMobileCarousel() {
     dragFree: false,
   })
 
-  const setSlideWidth = useCallback(
-    (viewport) => {
-      if (!viewport) return
-      const slideWidth = Math.round(viewport.clientWidth * SLIDE_WIDTH_RATIO)
-      viewport.style.setProperty('--slide-size', `${slideWidth}px`)
-    },
-    [],
-  )
+  const setSlideWidth = useCallback((viewport) => {
+    if (!viewport) return
+    const slideWidth = Math.max(
+      260,
+      Math.round(viewport.clientWidth - SLIDE_PEEK_PX * 2),
+    )
+    viewport.style.setProperty('--slide-size', `${slideWidth}px`)
+  }, [])
 
   const setViewportRef = useCallback(
     (node) => {
@@ -72,6 +74,30 @@ export default function FeatureMobileCarousel() {
     }
   }, [emblaApi, setSlideWidth, updateSlideStyles])
 
+  useEffect(() => {
+    if (!emblaApi) return undefined
+
+    let timer
+
+    const startAutoplay = () => {
+      clearInterval(timer)
+      timer = setInterval(() => emblaApi.scrollNext(), AUTOPLAY_MS)
+    }
+
+    const stopAutoplay = () => clearInterval(timer)
+
+    startAutoplay()
+
+    emblaApi.on('pointerDown', stopAutoplay)
+    emblaApi.on('select', startAutoplay)
+
+    return () => {
+      stopAutoplay()
+      emblaApi.off('pointerDown', stopAutoplay)
+      emblaApi.off('select', startAutoplay)
+    }
+  }, [emblaApi])
+
   function scrollTo(index) {
     emblaApi?.scrollTo(index)
   }
@@ -120,7 +146,7 @@ export default function FeatureMobileCarousel() {
               aria-label={`Go to ${tab.label}`}
               onClick={() => scrollTo(index)}
               className={`h-2 cursor-pointer rounded-full transition-all duration-300 ease-out ${
-                isActive ? 'w-6 bg-[#5B3AFF]' : 'w-2 bg-zinc-300'
+                isActive ? 'w-4 bg-[#303030]' : 'w-2 bg-zinc-300'
               }`}
             />
           )

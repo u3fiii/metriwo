@@ -151,7 +151,11 @@ export default function Hero() {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setAccountsOpen(false)
       }
-      if (platformRef.current && !platformRef.current.contains(e.target)) {
+      if (
+        platformRef.current &&
+        !platformRef.current.contains(e.target) &&
+        !e.target.closest('[data-platform-dropdown]')
+      ) {
         setPlatformOpen(false)
       }
     }
@@ -177,7 +181,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative z-[1] flex min-h-screen flex-col px-4 pb-6 pt-20 sm:px-6 lg:pt-24">
+    <section className="relative z-[2] flex min-h-screen flex-col px-4 pb-6 pt-20 sm:px-6 lg:pt-24">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-6 sm:gap-8 lg:flex-row-reverse lg:items-center lg:gap-0 lg:px-20 xl:max-w-7xl xl:gap-0">
         <HeroArtwork />
 
@@ -227,7 +231,7 @@ export default function Hero() {
 
           <div
             ref={searchRef}
-            className="relative mt-5 w-full max-w-[445px] overflow-visible sm:mt-6"
+            className="relative z-30 mt-5 w-full max-w-[445px] overflow-visible sm:mt-6"
           >
             <div className="flex w-full items-center gap-2 rounded-lg bg-[#ffffff60] py-2 pl-4 pr-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-zinc-200/80 transition-[background-color,box-shadow,ring-color,ring-width] duration-300 ease-in-out hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)] hover:ring-[3px] hover:ring-zinc-300/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5B3AFF]">
               <Search
@@ -267,36 +271,40 @@ export default function Hero() {
                   />
                 </button>
 
-                {platformOpen && (
-                  <ul className="absolute left-0 top-full z-20 mt-2 w-full min-w-0 rounded-lg bg-white p-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100">
-                    {PLATFORMS.map((p) => (
-                      <li key={p.id}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPlatform(p)
-                            setPlatformOpen(false)
-                          }}
-                          className={`flex w-full items-center gap-2.5 rounded-lg p-2 text-left text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 ${
-                            platform.id === p.id ? 'bg-zinc-100 text-zinc-900' : ''
-                          }`}
-                        >
-                          <PlatformLogo
-                            Icon={p.Icon}
-                            className="h-[18px] w-[18px] text-zinc-700"
-                          />
-                          {p.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
             </div>
 
+            {platformOpen && (
+              <ul
+                data-platform-dropdown
+                className="hero-search-dropdown absolute right-2 top-[calc(100%+8px)] z-40 min-w-[9rem] rounded-lg bg-white p-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100"
+              >
+                {PLATFORMS.map((p) => (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPlatform(p)
+                        setPlatformOpen(false)
+                      }}
+                      className={`flex w-full items-center gap-2.5 rounded-lg p-2 text-left text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 ${
+                        platform.id === p.id ? 'bg-zinc-100 text-zinc-900' : ''
+                      }`}
+                    >
+                      <PlatformLogo
+                        Icon={p.Icon}
+                        className="h-[18px] w-[18px] text-zinc-700"
+                      />
+                      {p.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
             {/* Accounts dropdown */}
             {accountsOpen && displayAccounts.length > 0 && (
-              <ul className="absolute left-0 right-0 top-full z-10 mt-2 max-h-64 overflow-auto rounded-lg bg-white p-1 text-left shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100">
+              <ul className="hero-search-dropdown absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-64 overflow-auto rounded-lg bg-white p-1 text-left shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-zinc-100">
                 {displayAccounts.map((account, index) => (
                   <li key={`${account.username}-${index}`}>
                     <button
