@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   DEMO_INIT,
+  MOBILE_CHART_HEIGHTS,
+  MOBILE_PLATFORMS,
   MSG_POOL,
   PLATFORMS_BARS,
-  PORTRAIT_SOURCES,
   POSTS_POOL,
   SPARK_INIT,
 } from './heroDashboardData'
@@ -42,6 +43,10 @@ function sparkColor(i) {
   return '#D2CEFD'
 }
 
+function mobileBarColor(i) {
+  return sparkColor(i)
+}
+
 function pickUnused(used, length) {
   let next
   do {
@@ -56,6 +61,21 @@ function normalizeDemo(vals) {
   v = v.map((x) => Math.round((x / sum) * 100))
   v[0] += 100 - v.reduce((a, b) => a + b, 0)
   return v
+}
+
+function MetriwoLogo() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 50 52" fill="none" aria-hidden>
+      <path
+        d="M25.4946 19.3359L30.5053 29.3761L37.8035 19.3359L44.2642 29.3761"
+        stroke="#5B3AFF"
+        strokeWidth="6.388"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="19.6687" cy="28.6707" r="3.66871" fill="#5B3AFF" />
+    </svg>
+  )
 }
 
 export default function HeroDashboard() {
@@ -73,6 +93,10 @@ export default function HeroDashboard() {
     flash: false,
   })
   const [sparkH, setSparkH] = useState(SPARK_INIT)
+  const [mobileBars, setMobileBars] = useState(MOBILE_CHART_HEIGHTS)
+  const [mFol, setMFol] = useState('248K')
+  const [mRch, setMRch] = useState('2.4M')
+  const [mEng, setMEng] = useState('8.2%')
   const [eNum, setENum] = useState('4.8%')
   const [eBadge, setEBadge] = useState({ text: '▲ 0.6%', up: true, flash: false })
   const [rchNum, setRchNum] = useState('1.2M')
@@ -83,16 +107,16 @@ export default function HeroDashboard() {
     up: true,
     flash: false,
   })
-  const [bars, setBars] = useState(() => PLATFORMS_BARS.map((b) => ({ ...b })))
+  const [barVals, setBarVals] = useState(() => PLATFORMS_BARS.map((b) => b.val))
   const [fadingBars, setFadingBars] = useState({})
+  const [fadingMobile, setFadingMobile] = useState({})
   const [demo, setDemo] = useState(() => DEMO_INIT.map((d) => ({ ...d })))
   const [fadingDemo, setFadingDemo] = useState({})
   const [inboxIdx, setInboxIdx] = useState([0, 1])
   const [inboxFlash, setInboxFlash] = useState(false)
+  const [mobileInboxFlash, setMobileInboxFlash] = useState(false)
   const [postIdx, setPostIdx] = useState(0)
   const [postFlash, setPostFlash] = useState(false)
-  const [portraitIndex, setPortraitIndex] = useState(0)
-  const portraitSrc = PORTRAIT_SOURCES[portraitIndex] ?? PORTRAIT_SOURCES[0]
 
   const animNum = useCallback((setter, from, to, dur, fmt) => {
     const start = performance.now()
@@ -109,6 +133,11 @@ export default function HeroDashboard() {
     setTimeout(() => {
       setBadge((b) => ({ ...updater(b), flash: false }))
     }, 210)
+  }, [])
+
+  const syncMobileBars = useCallback((heights) => {
+    const mx = Math.max(...heights)
+    setMobileBars(heights.map((h) => (h / mx) * 100))
   }, [])
 
   useEffect(() => {
@@ -131,14 +160,19 @@ export default function HeroDashboard() {
       fValRef.current = newVal
 
       animNum(setFNum, fromVal, newVal, 900, formatFollowers)
+      setMFol(`${(newVal / 1000).toFixed(0)}K`)
       flashBadge(setFBadge, () => ({
         text: `${up ? '▲' : '▼'} ${Math.abs(pct).toFixed(1)}% this week`,
         up,
       }))
-      setSparkH((prev) => [...prev.slice(1), rInt(20, 100)])
+      setSparkH((prev) => {
+        const next = [...prev.slice(1), rInt(20, 100)]
+        syncMobileBars(next)
+        return next
+      })
     }, 3400)
     return () => clearInterval(id)
-  }, [animNum, flashBadge])
+  }, [animNum, flashBadge, syncMobileBars])
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -149,6 +183,7 @@ export default function HeroDashboard() {
       eValRef.current = newVal
 
       animNum(setENum, from, newVal, 800, (v) => `${v.toFixed(1)}%`)
+      setMEng(`${newVal.toFixed(1)}%`)
       flashBadge(setEBadge, () => ({
         text: `${up ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%`,
         up,
@@ -166,6 +201,7 @@ export default function HeroDashboard() {
       rchValRef.current = newVal
 
       animNum(setRchNum, from * 1_000_000, newVal * 1_000_000, 800, formatReachM)
+      setMRch(`${newVal.toFixed(1)}M`)
       flashBadge(setRchBadge, () => ({
         text: `${up ? '▲' : '▼'} ${Math.abs(Math.round(delta * 100))}%`,
         up,
@@ -193,18 +229,21 @@ export default function HeroDashboard() {
 
   useEffect(() => {
     const id = setInterval(() => {
-      setBars((prev) =>
-        prev.map((b) => ({
-          ...b,
-          val: Math.max(10, Math.min(98, b.val + rInt(-13, 16))),
-        })),
+      setBarVals((prev) =>
+        prev.map((v) => Math.max(10, Math.min(98, v + rInt(-13, 16)))),
       )
       const fade = {}
+      const mFade = {}
       PLATFORMS_BARS.forEach((_, i) => {
         fade[i] = true
+        mFade[i] = true
       })
       setFadingBars(fade)
-      setTimeout(() => setFadingBars({}), 210)
+      setFadingMobile(mFade)
+      setTimeout(() => {
+        setFadingBars({})
+        setFadingMobile({})
+      }, 210)
     }, 2700)
     return () => clearInterval(id)
   }, [])
@@ -231,6 +270,7 @@ export default function HeroDashboard() {
   useEffect(() => {
     const id = setInterval(() => {
       setInboxFlash(true)
+      setMobileInboxFlash(true)
       setTimeout(() => {
         setInboxIdx((prev) => {
           const used = new Set(prev)
@@ -238,6 +278,7 @@ export default function HeroDashboard() {
           return [next, prev[0]]
         })
         setInboxFlash(false)
+        setMobileInboxFlash(false)
       }, 260)
     }, 2500)
     return () => clearInterval(id)
@@ -256,6 +297,7 @@ export default function HeroDashboard() {
 
   const sparkMax = Math.max(...sparkH)
   const post = POSTS_POOL[postIdx]
+  const mobileBarMax = Math.max(...mobileBars)
 
   return (
     <div
@@ -264,57 +306,186 @@ export default function HeroDashboard() {
       style={{ height: SCENE_SIZE * scale }}
     >
       <div
-        className="hero-orbit-scene"
+        className="hero-tile-scene"
         style={{ transform: `scale(${scale})` }}
         role="img"
-        aria-label="Animated Metriwo social analytics orbit dashboard"
+        aria-label="Animated Metriwo social analytics dashboard with phone preview and floating metrics"
       >
-        <svg className="hero-orbit-rings hero-orbit-rings--outer" viewBox="0 0 580 580" aria-hidden>
+        <svg
+          className="tile-ring-svg tile-ring-svg--inner"
+          viewBox="0 0 580 580"
+          aria-hidden
+        >
           <circle
             cx="290"
             cy="290"
-            r="235"
+            r="146"
             fill="none"
             stroke="#d4d4d8"
             strokeWidth="1.5"
-            strokeDasharray="10 8"
+            strokeDasharray="18 12"
           />
         </svg>
-        <svg className="hero-orbit-rings hero-orbit-rings--inner" viewBox="0 0 580 580" aria-hidden>
+        <svg
+          className="tile-ring-svg tile-ring-svg--outer"
+          viewBox="0 0 580 580"
+          aria-hidden
+        >
           <circle
             cx="290"
             cy="290"
-            r="140"
+            r="240"
             fill="none"
             stroke="#d4d4d8"
             strokeWidth="1.5"
-            strokeDasharray="8 7"
+            strokeDasharray="22 14"
           />
         </svg>
 
-        <div className="center-portrait">
-          <img
-            src={portraitSrc}
-            alt="Metriwo creator"
-            loading="eager"
-            decoding="async"
-            onError={() => {
-              setPortraitIndex((i) =>
-                i < PORTRAIT_SOURCES.length - 1 ? i + 1 : i,
-              )
-            }}
-          />
+        <div className="tile-screen-wrap">
+          <div className="tile-db">
+            <div className="tile-db-nav">
+              <div className="tile-db-logo-row">
+                <MetriwoLogo />
+                <span className="tile-db-logo-text">metriwo</span>
+              </div>
+              <div className="tile-db-nav-right">
+                <div className="tile-db-notif">
+                  <svg
+                    width="9"
+                    height="9"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#5B3AFF"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    aria-hidden
+                  >
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 01-3.46 0" />
+                  </svg>
+                </div>
+                <div className="tile-db-ava">R</div>
+              </div>
+            </div>
+
+            <div className="tile-db-kpis">
+              <div className="tile-db-kpi">
+                <div className="tile-db-kpi-l">Followers</div>
+                <div className="tile-db-kpi-v">{mFol}</div>
+                <div className="tile-db-kpi-b">▲ 3.2%</div>
+              </div>
+              <div className="tile-db-kpi">
+                <div className="tile-db-kpi-l">Reach</div>
+                <div className="tile-db-kpi-v">{mRch}</div>
+                <div className="tile-db-kpi-b">▲ 12%</div>
+              </div>
+              <div className="tile-db-kpi">
+                <div className="tile-db-kpi-l">Eng.</div>
+                <div className="tile-db-kpi-v">{mEng}</div>
+                <div className="tile-db-kpi-b">▲ 0.9%</div>
+              </div>
+            </div>
+
+            <div className="tile-db-chart">
+              <div className="tile-db-chart-hdr">
+                <span className="tile-db-chart-title">Weekly Reach</span>
+                <span className="tile-db-chart-tag">30d</span>
+              </div>
+              <div className="tile-db-bars-card">
+                <div className="tile-db-bars">
+                  {mobileBars.map((h, i) => (
+                    <div
+                      key={i}
+                      className="tile-db-bar"
+                      style={{
+                        height: `${(h / mobileBarMax) * 100}%`,
+                        background: mobileBarColor(i),
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="tile-db-xlbls">
+                  {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((lbl, i) => (
+                    <span key={`${lbl}-${i}`} className="tile-db-xl">
+                      {lbl}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="tile-db-plat">
+              <div className="tile-db-plat-hdr">Platforms</div>
+              <div className="tile-db-plat-card">
+                {MOBILE_PLATFORMS.map((p, i) => (
+                  <div key={p.name} className="tile-db-prow">
+                    <span className="tile-db-pname" style={{ color: p.color }}>
+                      {p.name}
+                    </span>
+                    <div className="tile-db-ptrack">
+                      <div
+                        className="tile-db-pfill"
+                        style={{
+                          width: `${barVals[i]}%`,
+                          background: p.color,
+                        }}
+                      />
+                    </div>
+                    <span
+                      className="tile-db-pval"
+                      style={{ opacity: fadingMobile[i] ? 0 : 1 }}
+                    >
+                      {barVals[i]}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="tile-db-inbox">
+              <div className="tile-db-inbox-hdr">
+                <span className="tile-db-inbox-title">Inbox</span>
+                <span className="tile-db-inbox-badge">
+                  <span className="tile-db-inbox-dot" />
+                  3 new
+                </span>
+              </div>
+              <div className="tile-db-inbox-card">
+                {inboxIdx.map((idx, i) => {
+                  const m = MSG_POOL[idx]
+                  return (
+                    <div
+                      key={`mobile-${idx}-${i}`}
+                      className="tile-db-imsg"
+                      style={{ opacity: mobileInboxFlash ? 0 : 1 }}
+                    >
+                      <div className="tile-db-iav" style={{ background: m.color }}>
+                        {m.initials}
+                      </div>
+                      <div className="tile-db-ibody">
+                        <div className="tile-db-iname">{m.name}</div>
+                        <div className="tile-db-itext">{m.text}</div>
+                      </div>
+                      <div className="tile-db-idot" />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Inner: Engagement */}
         <div
-          className="orbit-card orbit-float-f0"
-          style={{ left: 345, top: 155, width: 112, padding: '9px 10px' }}
+          className="tile-card tile-float-f0"
+          style={{ left: 348, top: 148, width: 112, padding: '9px 10px' }}
         >
-          <div className="lbl">Engagement</div>
-          <div className="num lg">{eNum}</div>
+          <div className="tile-lbl">Engagement</div>
+          <div className="tile-num" style={{ fontSize: 20 }}>
+            {eNum}
+          </div>
           <div
-            className={`bdg ${eBadge.up ? 'bu' : 'bd'}`}
+            className={`tile-bdg ${eBadge.up ? 'tile-bu' : 'tile-bd'}`}
             style={{
               opacity: eBadge.flash ? 0 : 1,
               transform: eBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
@@ -324,22 +495,21 @@ export default function HeroDashboard() {
           </div>
         </div>
 
-        {/* Inner: Reach */}
         <div
-          className="orbit-card orbit-float-f1"
-          style={{
-            left: 108,
-            top: 238,
-            width: 74,
-            padding: '8px 9px',
-            animationDelay: '1.1s',
-          }}
+          className="tile-card tile-float-f1"
+          style={{ left: 102, top: 240, width: 74, padding: '8px 9px' }}
         >
-          <div className="lbl xs">Reach</div>
-          <div className="num sm">{rchNum}</div>
+          <div className="tile-lbl" style={{ fontSize: 6.5 }}>
+            Reach
+          </div>
+          <div className="tile-num" style={{ fontSize: 16 }}>
+            {rchNum}
+          </div>
           <div
-            className={`bdg xs ${rchBadge.up ? 'bu' : 'bd'}`}
+            className={`tile-bdg ${rchBadge.up ? 'tile-bu' : 'tile-bd'}`}
             style={{
+              fontSize: 6.5,
+              padding: '1.5px 5px',
               opacity: rchBadge.flash ? 0 : 1,
               transform: rchBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
             }}
@@ -348,58 +518,51 @@ export default function HeroDashboard() {
           </div>
         </div>
 
-        {/* Inner: Scheduled */}
         <div
-          className="orbit-card orbit-float-f2"
-          style={{
-            left: 188,
-            top: 392,
-            width: 120,
-            padding: '8px 10px',
-            animationDelay: '2.3s',
-          }}
+          className="tile-card tile-float-f2"
+          style={{ left: 185, top: 396, width: 120, padding: '8px 10px' }}
         >
-          <div className="card-header">
-            <div className="lbl" style={{ margin: 0 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}
+          >
+            <div className="tile-lbl" style={{ margin: 0 }}>
               Scheduled
             </div>
-            <div className="live-pill">
-              <span className="live-pill-dot" />
+            <div className="tile-live-pill">
+              <span className="tile-live-pill-dot" />
               Live
             </div>
           </div>
           <div
-            className="sched-row"
+            className="tile-sched-row"
             style={{
               opacity: postFlash ? 0 : 1,
               transform: postFlash ? 'translateX(-4px)' : 'translateX(0)',
             }}
           >
-            <div className="sched-em" style={{ background: post.bg }}>
+            <div className="tile-sched-em" style={{ background: post.bg }}>
               {post.emoji}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div className="sched-title">{post.title}</div>
-              <div className="sched-date">{post.date}</div>
+              <div className="tile-sched-title">{post.title}</div>
+              <div className="tile-sched-date">{post.date}</div>
             </div>
           </div>
         </div>
 
-        {/* Outer: Followers */}
         <div
-          className="orbit-card orbit-float-f3"
-          style={{
-            left: 44,
-            top: 44,
-            width: 148,
-            padding: '10px 12px',
-            animationDelay: '0.5s',
-          }}
+          className="tile-card tile-float-f3"
+          style={{ left: 38, top: 40, width: 148, padding: '10px 12px' }}
         >
-          <div className="lbl">Total Followers</div>
-          <div className="num">{fNum}</div>
+          <div className="tile-lbl">Total Followers</div>
+          <div className="tile-num">{fNum}</div>
           <div
-            className={`bdg ${fBadge.up ? 'bu' : 'bd'}`}
+            className={`tile-bdg ${fBadge.up ? 'tile-bu' : 'tile-bd'}`}
             style={{
               opacity: fBadge.flash ? 0 : 1,
               transform: fBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
@@ -407,11 +570,11 @@ export default function HeroDashboard() {
           >
             {fBadge.text}
           </div>
-          <div className="sp">
+          <div className="tile-sp">
             {sparkH.map((h, i) => (
               <div
                 key={i}
-                className="sb"
+                className="tile-sb"
                 style={{
                   height: `${(h / sparkMax) * 100}%`,
                   background: sparkColor(i),
@@ -421,22 +584,21 @@ export default function HeroDashboard() {
           </div>
         </div>
 
-        {/* Outer: Posts Today */}
         <div
-          className="orbit-card orbit-float-f4"
-          style={{
-            left: 422,
-            top: 92,
-            width: 86,
-            padding: '8px 10px',
-            animationDelay: '1.9s',
-          }}
+          className="tile-card tile-float-f4"
+          style={{ left: 426, top: 86, width: 86, padding: '8px 10px' }}
         >
-          <div className="lbl xs">Posts Today</div>
-          <div className="num md">{postsNum}</div>
+          <div className="tile-lbl" style={{ fontSize: 6.5 }}>
+            Posts Today
+          </div>
+          <div className="tile-num" style={{ fontSize: 19 }}>
+            {postsNum}
+          </div>
           <div
-            className={`bdg xs ${postsBadge.up ? 'bu' : 'bd'}`}
+            className={`tile-bdg ${postsBadge.up ? 'tile-bu' : 'tile-bd'}`}
             style={{
+              fontSize: 6.5,
+              padding: '1.5px 5px',
               opacity: postsBadge.flash ? 0 : 1,
               transform: postsBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
             }}
@@ -445,110 +607,102 @@ export default function HeroDashboard() {
           </div>
         </div>
 
-        {/* Outer: Platform Reach */}
         <div
-          className="orbit-card orbit-float-f5"
-          style={{
-            left: 448,
-            top: 302,
-            width: 136,
-            padding: '9px 11px',
-            animationDelay: '3.2s',
-          }}
+          className="tile-card tile-float-f5"
+          style={{ left: 452, top: 298, width: 112, padding: '9px 11px' }}
         >
-          <div className="card-header tight">
-            <div className="lbl" style={{ margin: 0 }}>
-              Platform Reach
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 4,
+            }}
+          >
+            <div className="tile-lbl" style={{ margin: 0 }}>
+              Platform
             </div>
-            <span className="live-dot-sm" />
+            <span className="tile-live-dot-sm" />
           </div>
-          {bars.map((b, i) => (
-            <div key={b.lbl} className="br">
-              <span className="bar-lbl" style={{ color: b.color }}>
+          {PLATFORMS_BARS.map((b, i) => (
+            <div key={b.lbl} className="tile-br">
+              <span className="tile-bar-lbl" style={{ color: b.color }}>
                 {b.lbl}
               </span>
-              <div className="bt">
+              <div className="tile-bt">
                 <div
-                  className="bf"
+                  className="tile-bf"
                   style={{
-                    width: `${b.val}%`,
+                    width: `${barVals[i]}%`,
                     background: b.color,
                     animationDelay: `${i * 0.1}s`,
                   }}
                 />
               </div>
-              <span className="bar-val" style={{ opacity: fadingBars[i] ? 0 : 1 }}>
-                {b.val}%
+              <span
+                className="tile-bar-val"
+                style={{ opacity: fadingBars[i] ? 0 : 1 }}
+              >
+                {barVals[i]}%
               </span>
             </div>
           ))}
         </div>
 
-        {/* Outer: Inbox */}
         <div
-          className="orbit-card orbit-float-f6"
-          style={{
-            left: 332,
-            top: 462,
-            width: 138,
-            padding: '9px 11px',
-            animationDelay: '0.8s',
-          }}
+          className="tile-card tile-float-f6"
+          style={{ left: 334, top: 450, width: 140, padding: '9px 11px' }}
         >
-          <div className="lbl" style={{ marginBottom: 4 }}>
+          <div className="tile-lbl" style={{ marginBottom: 5 }}>
             Inbox
           </div>
           {inboxIdx.map((idx, i) => {
             const m = MSG_POOL[idx]
             return (
               <div
-                key={`${idx}-${i}`}
-                className={`inbox-row${i === 0 ? ' bordered' : ''}`}
+                key={`outer-${idx}-${i}`}
+                className={`tile-inbox-row${i === 0 ? ' bordered' : ''}`}
                 style={{
                   opacity: inboxFlash ? 0 : 1,
                   transform: inboxFlash ? 'translateY(-4px)' : 'translateY(0)',
                 }}
               >
-                <div className="av" style={{ background: m.color }}>
+                <div className="tile-av" style={{ background: m.color }}>
                   {m.initials}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="inbox-name">{m.name}</div>
-                  <div className="inbox-text">{m.text}</div>
+                  <div className="tile-inbox-name">{m.name}</div>
+                  <div className="tile-inbox-text">{m.text}</div>
                 </div>
                 <div
-                  className="udot"
-                  style={{ animationDelay: i === 0 ? '0.2s' : '0.7s' }}
+                  className="tile-udot"
+                  style={{ animationDelay: i === 0 ? '0.2s' : '0.5s' }}
                 />
               </div>
             )
           })}
         </div>
 
-        {/* Outer: Demographics */}
         <div
-          className="orbit-card orbit-float-f7"
-          style={{
-            left: 18,
-            top: 348,
-            width: 112,
-            padding: '8px 10px',
-            animationDelay: '2.7s',
-          }}
+          className="tile-card tile-float-f7"
+          style={{ left: 14, top: 352, width: 112, padding: '8px 10px' }}
         >
-          <div className="lbl">Demographics</div>
-          <div className="demo-list">
+          <div className="tile-lbl">Demographics</div>
+          <div className="tile-demo-list">
             {demo.map((d, i) => (
-              <div key={d.label} className="demo-row">
-                <div className="demo-dot" style={{ background: d.color }} />
-                <span className="demo-label">{d.label}</span>
-                <div className="demo-track">
+              <div key={d.label} className="tile-demo-row">
+                <div className="tile-demo-dot" style={{ background: d.color }} />
+                <span className="tile-demo-label">{d.label}</span>
+                <div className="tile-demo-track">
                   <div
-                    className="demo-fill"
+                    className="tile-demo-fill"
                     style={{ width: `${d.val}%`, background: d.color }}
                   />
                 </div>
-                <span className="demo-pct" style={{ opacity: fadingDemo[i] ? 0 : 1 }}>
+                <span
+                  className="tile-demo-pct"
+                  style={{ opacity: fadingDemo[i] ? 0 : 1 }}
+                >
                   {d.val}%
                 </span>
               </div>
