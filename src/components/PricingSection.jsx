@@ -55,6 +55,7 @@ export default function PricingSection() {
           {PRICING_PLANS.map((plan) => {
             const price = plan.prices[billing]
             const isPro = plan.highlighted
+            const isFree = plan.id === 'free'
 
             return (
               <article
@@ -106,8 +107,13 @@ export default function PricingSection() {
 
                 <button
                   type="button"
-                  className={`mt-8 w-full rounded-full py-3.5 text-sm font-semibold transition-opacity hover:opacity-90 ${
-                    isPro ? 'bg-[#5B3AFF] text-white' : 'bg-zinc-100 text-zinc-700'
+                  disabled={isFree}
+                  className={`mt-8 w-full rounded-full py-3.5 text-sm font-semibold transition-opacity ${
+                    isPro
+                      ? 'bg-[#5B3AFF] text-white hover:opacity-90'
+                      : isFree
+                        ? 'cursor-not-allowed bg-zinc-100 text-zinc-400 opacity-60'
+                        : 'bg-zinc-100 text-zinc-700 hover:opacity-90'
                   }`}
                 >
                   {plan.cta}

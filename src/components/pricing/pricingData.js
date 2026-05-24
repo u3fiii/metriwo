@@ -32,7 +32,7 @@ export const PRICING_PLANS = [
       { Icon: Calendar, text: '10 scheduled posts/mo' },
       { Icon: UserPlus, text: 'Save up to 3 profiles' },
     ],
-    cta: 'Start with Free',
+    cta: 'Continue with Free',
     highlighted: false,
   },
   {

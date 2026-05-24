@@ -69,11 +69,12 @@ export default function Navbar() {
     const link = linkRefs.current[index]
     if (!nav || !link) return
 
-    const navRect = nav.getBoundingClientRect()
-    const linkRect = link.getBoundingClientRect()
-    const centerX = linkRect.left - navRect.left + linkRect.width / 2
+    const update = () => {
+      setDotLeft(link.offsetLeft + link.offsetWidth / 2)
+    }
 
-    setDotLeft(centerX)
+    update()
+    requestAnimationFrame(update)
   }, [])
 
   const handleNavClick = useCallback(

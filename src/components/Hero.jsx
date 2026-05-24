@@ -225,7 +225,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="mt-3 max-w-md text-lg font-regular text-zinc-600 sm:text-base lg:text-[14px]">
+          <p className="mt-1.5 max-w-md text-[22px] font-normal leading-snug text-zinc-800 sm:mt-2 sm:text-[34px] lg:mt-1 lg:text-[22px]">
             The only all-in-one social management tool you&apos;ll ever need
           </p>
 
