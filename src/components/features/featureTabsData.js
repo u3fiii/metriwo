@@ -8,8 +8,8 @@ import {
 
 export const FEATURE_TABS = [
   {
-    id: 'analytics',
-    label: 'Analytics',
+    id: 'insights',
+    label: 'Insights',
     Icon: BarChart3,
     mobileCardBg: '#E6E2FF',
     theme: {
@@ -32,7 +32,7 @@ export const FEATURE_TABS = [
         'Post-level breakdowns and audience demographics',
         'Custom date ranges and exportable reports',
       ],
-      artwork: 'analytics',
+      artwork: 'insights',
     },
   },
   {
@@ -54,18 +54,18 @@ export const FEATURE_TABS = [
       eyebrow: 'Plan ahead',
       title: 'Schedule posts without switching apps',
       description:
-        'Queue content for YouTube, Instagram, TikTok, and Facebook from a single calendar built for teams.',
+        'Queue content for Instagram, TikTok, X, and Facebook from a single calendar built for teams.',
       bullets: [
         'Drag-and-drop calendar with timezone support',
         'Best-time suggestions based on your audience',
-        'Bulk upload and auto-publish when you are offline',
+        'AI-generated captions for every post',
       ],
       artwork: 'scheduler',
     },
   },
   {
     id: 'engagement',
-    label: 'Engagement',
+    label: 'Inbox',
     Icon: MessageCircle,
     mobileCardBg: '#F9D0E8',
     theme: {
@@ -81,12 +81,11 @@ export const FEATURE_TABS = [
     content: {
       eyebrow: 'Stay close',
       title: 'Reply faster and never miss a mention',
-      description:
-        'Unified inbox for comments and DMs. Assign conversations, use saved replies, and keep your community active.',
+      description: 'Manage all your DMs without switching apps.',
       bullets: [
-        'All platforms in one threaded inbox',
-        'Team assignments and internal notes',
-        'Sentiment tags to prioritize urgent messages',
+        'Reply across Instagram, Facebook, X, LinkedIn & TikTok',
+        'Real-time sync across all accounts',
+        'Media, reactions, and emoji support',
       ],
       artwork: 'engagement',
     },

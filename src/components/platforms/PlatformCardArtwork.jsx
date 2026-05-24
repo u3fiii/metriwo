@@ -8,6 +8,10 @@ export default function PlatformCardArtwork({ variant }) {
       return <YoutubeCardsArtwork />
     case 'facebook-controls':
       return <FacebookControlsArtwork />
+    case 'linkedin-metrics':
+      return <LinkedInMetricsArtwork />
+    case 'x-threads':
+      return <XThreadsArtwork />
     default:
       return null
   }
@@ -73,6 +77,47 @@ function FacebookControlsArtwork() {
       </span>
       <span className="platform-art-controls__btn platform-art-controls__btn--minus">−</span>
       <span className="platform-art-controls__btn platform-art-controls__btn--plus">+</span>
+    </div>
+  )
+}
+
+function LinkedInMetricsArtwork() {
+  const rows = [
+    { label: 'Impressions', value: '24.8K', icon: '👁' },
+    { label: 'Engagement', value: '6.2%', icon: '💬' },
+    { label: 'Followers', value: '+412', icon: '↗' },
+  ]
+
+  return (
+    <div className="platform-art platform-art--priority platform-art--priority-compact">
+      {rows.map((row) => (
+        <div key={row.label} className="platform-art-priority__row">
+          <span className="platform-art-priority__icon">{row.icon}</span>
+          <span className="platform-art-priority__label">
+            {row.label}
+            <span className="block text-[10px] font-bold text-[#0A66C2]">{row.value}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function XThreadsArtwork() {
+  const posts = ['Great launch 🚀', 'Thread going viral', 'DM me for collab']
+
+  return (
+    <div className="platform-art platform-art--x-threads">
+      {posts.map((text, i) => (
+        <div
+          key={text}
+          className="platform-art-x-post"
+          style={{ transform: `rotate(${(i - 1) * 5}deg) translateY(${i * 4}px)` }}
+        >
+          <span className="platform-art-x-post__logo">𝕏</span>
+          <span className="platform-art-x-post__text">{text}</span>
+        </div>
+      ))}
     </div>
   )
 }

@@ -1,15 +1,18 @@
-import { PLATFORMS_CARDS } from './platforms/platformsData'
+import { PLATFORMS_FEATURED, PLATFORMS_SECONDARY } from './platforms/platformsData'
 import PlatformCardArtwork from './platforms/PlatformCardArtwork'
 
-function PlatformCardCopy({ card }) {
+function PlatformCardCopy({ card, compact = false }) {
   const textClass = card.textOnDark ? 'text-white' : 'text-zinc-900'
   const descClass = card.textOnDark ? 'text-white/90' : 'text-zinc-800'
+  const titleClass = compact
+    ? 'text-lg font-bold leading-snug sm:text-xl'
+    : 'text-xl font-bold leading-snug sm:text-2xl'
 
   return (
     <div className={`platform-card__copy min-w-0 ${textClass}`}>
-      <h3 className="text-xl font-bold leading-snug sm:text-2xl">{card.title}</h3>
+      <h3 className={titleClass}>{card.title}</h3>
       <p
-        className={`mt-2 text-sm font-normal leading-relaxed sm:text-[15px] ${descClass}`}
+        className={`mt-2 text-sm font-normal leading-relaxed sm:text-[15px] ${descClass}${compact ? ' line-clamp-3' : ''}`}
       >
         {card.description}
       </p>
@@ -17,22 +20,26 @@ function PlatformCardCopy({ card }) {
   )
 }
 
-function PlatformCard({ card, className = '' }) {
+function PlatformCard({ card, compact = false }) {
   return (
     <article
-      className={`platform-card platform-card--${card.layout} ${className}`}
-      style={{ backgroundColor: card.bg }}
+      className={`platform-card platform-card--${card.layout}${compact ? ' platform-card--compact' : ' platform-card--featured'}`}
+      style={
+        card.bgGradient
+          ? { background: card.bgGradient }
+          : { backgroundColor: card.bg }
+      }
     >
       {card.layout === 'horizontal' ? (
         <div className="platform-card__inner platform-card__inner--horizontal">
           <div className="platform-card__art shrink-0">
             <PlatformCardArtwork variant={card.artwork} />
           </div>
-          <PlatformCardCopy card={card} />
+          <PlatformCardCopy card={card} compact={compact} />
         </div>
       ) : card.layout === 'vertical-text-top' ? (
         <div className="platform-card__inner platform-card__inner--vertical">
-          <PlatformCardCopy card={card} />
+          <PlatformCardCopy card={card} compact={compact} />
           <div className="platform-card__art mt-6 shrink-0">
             <PlatformCardArtwork variant={card.artwork} />
           </div>
@@ -43,7 +50,7 @@ function PlatformCard({ card, className = '' }) {
             <PlatformCardArtwork variant={card.artwork} />
           </div>
           <div className="mt-6">
-            <PlatformCardCopy card={card} />
+            <PlatformCardCopy card={card} compact={compact} />
           </div>
         </div>
       )}
@@ -52,8 +59,6 @@ function PlatformCard({ card, className = '' }) {
 }
 
 export default function PlatformsSection() {
-  const [tiktok, instagram, youtube, facebook] = PLATFORMS_CARDS
-
   return (
     <section
       id="platforms"
@@ -80,10 +85,16 @@ export default function PlatformsSection() {
         </div>
 
         <div className="platforms-bento mt-12 sm:mt-14">
-          <PlatformCard card={tiktok} className="platforms-bento__tiktok" />
-          <PlatformCard card={instagram} className="platforms-bento__instagram" />
-          <PlatformCard card={youtube} className="platforms-bento__youtube" />
-          <PlatformCard card={facebook} className="platforms-bento__facebook" />
+          <div className="platforms-bento__row platforms-bento__row--featured">
+            {PLATFORMS_FEATURED.map((card) => (
+              <PlatformCard key={card.id} card={card} />
+            ))}
+          </div>
+          <div className="platforms-bento__row platforms-bento__row--secondary">
+            {PLATFORMS_SECONDARY.map((card) => (
+              <PlatformCard key={card.id} card={card} compact />
+            ))}
+          </div>
         </div>
       </div>
     </section>

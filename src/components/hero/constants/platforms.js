@@ -1,22 +1,18 @@
-import { SiFacebook, SiInstagram, SiTiktok, SiYoutube } from 'react-icons/si'
+import { FaLinkedin } from 'react-icons/fa6'
+import { SiFacebook, SiInstagram, SiTiktok, SiX } from 'react-icons/si'
 
 /**
  * Social platforms shown in the hero typewriter, search selector, and account mock data.
- * Each entry includes a Simple Icons component for consistent monotone logos.
+ * Order matches typewriter cycle: Instagram → TikTok → Facebook → LinkedIn → X.
  */
 export const PLATFORMS = [
-  {
-    id: 'youtube',
-    label: 'YouTube',
-    typewriter: 'YouTube',
-    color: '#FF0000',
-    Icon: SiYoutube,
-  },
   {
     id: 'instagram',
     label: 'Instagram',
     typewriter: 'Instagram',
     color: '#E1306C',
+    typewriterGradient:
+      'linear-gradient(45deg, #f09433 0%, #e6683c 18%, #dc2743 36%, #cc2366 54%, #bc1888 72%, #833ab4 100%)',
     Icon: SiInstagram,
   },
   {
@@ -24,6 +20,8 @@ export const PLATFORMS = [
     label: 'TikTok',
     typewriter: 'TikTok',
     color: '#010101',
+    typewriterGradient:
+      'linear-gradient(135deg, #0a0a0a 0%, #141414 42%, #25f4ee 72%, #fe2c55 100%)',
     Icon: SiTiktok,
   },
   {
@@ -31,7 +29,27 @@ export const PLATFORMS = [
     label: 'Facebook',
     typewriter: 'Facebook',
     color: '#1877F2',
+    typewriterGradient:
+      'linear-gradient(135deg, #0a5dc2 0%, #1877f2 52%, #5ba3f5 100%)',
     Icon: SiFacebook,
+  },
+  {
+    id: 'x',
+    label: 'X',
+    typewriter: 'Twitter',
+    color: '#000000',
+    typewriterGradient:
+      'linear-gradient(135deg, #000000 0%, #141414 40%, #000400 100%)',
+    Icon: SiX,
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    typewriter: 'LinkedIn',
+    color: '#0A66C2',
+    typewriterGradient:
+      'linear-gradient(135deg, #004182 0%, #0a66c2 50%, #378fe9 100%)',
+    Icon: FaLinkedin,
   },
 ]
 

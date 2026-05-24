@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  ALL_POSTS,
-  AVATAR_COLORS,
-  DEM_COLORS,
-  DEM_LABELS,
-  DEM_VALS_INIT,
+  DEMO_INIT,
   MSG_POOL,
-  PLATFORMS_INIT,
+  PLATFORMS_BARS,
+  PORTRAIT_SOURCES,
+  POSTS_POOL,
   SPARK_INIT,
 } from './heroDashboardData'
 import './heroDashboard.css'
+
+const SCENE_SIZE = 580
 
 function rand(min, max) {
   return Math.random() * (max - min) + min
@@ -32,7 +32,17 @@ function formatFollowers(v) {
   return Math.round(v).toLocaleString()
 }
 
-function pickUnusedIndex(used, length) {
+function formatReachM(v) {
+  return `${(v / 1_000_000).toFixed(1)}M`
+}
+
+function sparkColor(i) {
+  if (i >= 5) return '#5B3AFF'
+  if (i >= 3) return '#A29BFE'
+  return '#D2CEFD'
+}
+
+function pickUnused(used, length) {
   let next
   do {
     next = rInt(0, length - 1)
@@ -40,26 +50,49 @@ function pickUnusedIndex(used, length) {
   return next
 }
 
+function normalizeDemo(vals) {
+  let v = [...vals]
+  const sum = v.reduce((a, b) => a + b, 0)
+  v = v.map((x) => Math.round((x / sum) * 100))
+  v[0] += 100 - v.reduce((a, b) => a + b, 0)
+  return v
+}
+
 export default function HeroDashboard() {
-  const pieRef = useRef(null)
-  const demValsRef = useRef([...DEM_VALS_INIT])
-  const pieAnimRef = useRef(null)
+  const scalerRef = useRef(null)
   const fValRef = useRef(248600)
   const eValRef = useRef(4.8)
+  const rchValRef = useRef(1.2)
+  const postsValRef = useRef(7)
 
-  const [fStat, setFStat] = useState('248.6K')
-  const [fBadge, setFBadge] = useState({ text: '▲ 3.2% this week', up: true, fading: false })
-  const [eStat, setEStat] = useState('4.8%')
-  const [eBadge, setEBadge] = useState({ text: '▲ 0.6%', up: true, fading: false })
-  const [sparkHistory, setSparkHistory] = useState(SPARK_INIT)
-  const [activePosts, setActivePosts] = useState([0, 1, 2])
-  const [postTick, setPostTick] = useState(0)
-  const [platforms, setPlatforms] = useState(() => PLATFORMS_INIT.map((p) => ({ ...p })))
-  const [activeInbox, setActiveInbox] = useState([0, 1])
-  const [inboxTick, setInboxTick] = useState(0)
-  const [demVals, setDemVals] = useState(DEM_VALS_INIT)
-  const [pieCenter, setPieCenter] = useState('248K')
-  const [pieCenterFading, setPieCenterFading] = useState(false)
+  const [scale, setScale] = useState(1)
+  const [fNum, setFNum] = useState('248.6K')
+  const [fBadge, setFBadge] = useState({
+    text: '▲ 3.2% this week',
+    up: true,
+    flash: false,
+  })
+  const [sparkH, setSparkH] = useState(SPARK_INIT)
+  const [eNum, setENum] = useState('4.8%')
+  const [eBadge, setEBadge] = useState({ text: '▲ 0.6%', up: true, flash: false })
+  const [rchNum, setRchNum] = useState('1.2M')
+  const [rchBadge, setRchBadge] = useState({ text: '▲ 8%', up: true, flash: false })
+  const [postsNum, setPostsNum] = useState('7')
+  const [postsBadge, setPostsBadge] = useState({
+    text: '▲ 3 new',
+    up: true,
+    flash: false,
+  })
+  const [bars, setBars] = useState(() => PLATFORMS_BARS.map((b) => ({ ...b })))
+  const [fadingBars, setFadingBars] = useState({})
+  const [demo, setDemo] = useState(() => DEMO_INIT.map((d) => ({ ...d })))
+  const [fadingDemo, setFadingDemo] = useState({})
+  const [inboxIdx, setInboxIdx] = useState([0, 1])
+  const [inboxFlash, setInboxFlash] = useState(false)
+  const [postIdx, setPostIdx] = useState(0)
+  const [postFlash, setPostFlash] = useState(false)
+  const [portraitIndex, setPortraitIndex] = useState(0)
+  const portraitSrc = PORTRAIT_SOURCES[portraitIndex] ?? PORTRAIT_SOURCES[0]
 
   const animNum = useCallback((setter, from, to, dur, fmt) => {
     const start = performance.now()
@@ -71,407 +104,453 @@ export default function HeroDashboard() {
     requestAnimationFrame(step)
   }, [])
 
-  const drawPie = useCallback((vals) => {
-    const canvas = pieRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const pcx = 50
-    const pcy = 50
-    const pr = 44
-    const pin = 28
-
-    ctx.clearRect(0, 0, 100, 100)
-    const total = vals.reduce((a, b) => a + b, 0)
-    let sa = -Math.PI / 2
-    vals.forEach((v, i) => {
-      const sw = (v / total) * 2 * Math.PI
-      ctx.beginPath()
-      ctx.moveTo(pcx, pcy)
-      ctx.arc(pcx, pcy, pr, sa, sa + sw)
-      ctx.closePath()
-      ctx.fillStyle = DEM_COLORS[i]
-      ctx.fill()
-      sa += sw
-    })
-    ctx.beginPath()
-    ctx.arc(pcx, pcy, pin, 0, 2 * Math.PI)
-    ctx.fillStyle = '#fff'
-    ctx.fill()
-    sa = -Math.PI / 2
-    vals.forEach((v) => {
-      const sw = (v / total) * 2 * Math.PI
-      ctx.beginPath()
-      ctx.moveTo(pcx + pin * Math.cos(sa), pcy + pin * Math.sin(sa))
-      ctx.lineTo(pcx + pr * Math.cos(sa), pcy + pr * Math.sin(sa))
-      ctx.strokeStyle = '#f3f2f0'
-      ctx.lineWidth = 1.5
-      ctx.stroke()
-      sa += sw
-    })
+  const flashBadge = useCallback((setBadge, updater) => {
+    setBadge((b) => ({ ...b, flash: true }))
+    setTimeout(() => {
+      setBadge((b) => ({ ...updater(b), flash: false }))
+    }, 210)
   }, [])
 
-  const startPieAnim = useCallback(
-    (toVals) => {
-      const from = [...demValsRef.current]
-      const start = performance.now()
-      const dur = 700
-
-      function animPie(now) {
-        const p = Math.min((now - start) / dur, 1)
-        const ep = ease(p)
-        const cur = from.map((f, i) => lerp(f, toVals[i], ep))
-        drawPie(cur)
-        if (p < 1) {
-          pieAnimRef.current = requestAnimationFrame(animPie)
-        } else {
-          demValsRef.current = [...toVals]
-          setDemVals([...toVals])
-        }
-      }
-
-      if (pieAnimRef.current) cancelAnimationFrame(pieAnimRef.current)
-      pieAnimRef.current = requestAnimationFrame(animPie)
-    },
-    [drawPie],
-  )
-
   useEffect(() => {
-    drawPie(DEM_VALS_INIT)
-    const sweepStart = performance.now() + 300
-
-    function initSweep(now) {
-      if (now < sweepStart) {
-        requestAnimationFrame(initSweep)
-        return
-      }
-      const p = Math.min((now - sweepStart) / 900, 1)
-      const cur = DEM_VALS_INIT.map((v) => v * ease(p))
-      drawPie(cur)
-      if (p < 1) requestAnimationFrame(initSweep)
-    }
-
-    requestAnimationFrame(initSweep)
-    return () => {
-      if (pieAnimRef.current) cancelAnimationFrame(pieAnimRef.current)
-    }
-  }, [drawPie])
+    const el = scalerRef.current
+    if (!el) return undefined
+    const update = () => setScale(Math.min(1, el.clientWidth / SCENE_SIZE))
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   useEffect(() => {
     const id = setInterval(() => {
-      const delta = rInt(-8000, 12000)
+      const delta = rInt(-9000, 13000)
       const fromVal = fValRef.current
       const newVal = Math.max(180000, fromVal + delta)
       const pct = (delta / fromVal) * 100
       const up = delta >= 0
       fValRef.current = newVal
 
-      animNum(setFStat, fromVal, newVal, 900, formatFollowers)
-      setFBadge((b) => ({ ...b, fading: true }))
-      setTimeout(() => {
-        setFBadge({
-          text: `${up ? '▲' : '▼'} ${Math.abs(pct).toFixed(1)}% this week`,
-          up,
-          fading: false,
-        })
-      }, 220)
-    }, 3200)
+      animNum(setFNum, fromVal, newVal, 900, formatFollowers)
+      flashBadge(setFBadge, () => ({
+        text: `${up ? '▲' : '▼'} ${Math.abs(pct).toFixed(1)}% this week`,
+        up,
+      }))
+      setSparkH((prev) => [...prev.slice(1), rInt(20, 100)])
+    }, 3400)
     return () => clearInterval(id)
-  }, [animNum])
+  }, [animNum, flashBadge])
 
   useEffect(() => {
     const id = setInterval(() => {
-      const delta = rand(-0.8, 0.9)
+      const delta = rand(-0.9, 1)
       const from = eValRef.current
       const newVal = Math.max(1.2, Math.min(9.8, from + delta))
       const up = delta >= 0
       eValRef.current = newVal
 
-      animNum(setEStat, from, newVal, 800, (v) => `${v.toFixed(1)}%`)
-      setEBadge((b) => ({ ...b, fading: true }))
-      setTimeout(() => {
-        setEBadge({
-          text: `${up ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%`,
-          up,
-          fading: false,
-        })
-      }, 220)
-
-      setSparkHistory((prev) => {
-        const next = [...prev.slice(1), Math.round(rand(20, 100))]
-        return next
-      })
-    }, 2800)
+      animNum(setENum, from, newVal, 800, (v) => `${v.toFixed(1)}%`)
+      flashBadge(setEBadge, () => ({
+        text: `${up ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%`,
+        up,
+      }))
+    }, 3100)
     return () => clearInterval(id)
-  }, [animNum])
+  }, [animNum, flashBadge])
 
   useEffect(() => {
     const id = setInterval(() => {
-      setActivePosts((prev) => {
-        const used = new Set(prev.slice(1))
-        const next = pickUnusedIndex(used, ALL_POSTS.length)
-        return [...prev.slice(1), next]
+      const delta = rand(-0.08, 0.15)
+      const from = rchValRef.current
+      const newVal = Math.max(0.8, Math.min(2.4, from + delta))
+      const up = delta >= 0
+      rchValRef.current = newVal
+
+      animNum(setRchNum, from * 1_000_000, newVal * 1_000_000, 800, formatReachM)
+      flashBadge(setRchBadge, () => ({
+        text: `${up ? '▲' : '▼'} ${Math.abs(Math.round(delta * 100))}%`,
+        up,
+      }))
+    }, 3800)
+    return () => clearInterval(id)
+  }, [animNum, flashBadge])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const delta = rInt(-2, 4)
+      const from = postsValRef.current
+      const newVal = Math.max(1, Math.min(18, from + delta))
+      const up = delta >= 0
+      postsValRef.current = newVal
+
+      animNum(setPostsNum, from, newVal, 600, (v) => String(Math.round(v)))
+      flashBadge(setPostsBadge, () => ({
+        text: `${up ? '▲' : '▼'} ${Math.abs(delta)} new`,
+        up,
+      }))
+    }, 4200)
+    return () => clearInterval(id)
+  }, [animNum, flashBadge])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setBars((prev) =>
+        prev.map((b) => ({
+          ...b,
+          val: Math.max(10, Math.min(98, b.val + rInt(-13, 16))),
+        })),
+      )
+      const fade = {}
+      PLATFORMS_BARS.forEach((_, i) => {
+        fade[i] = true
       })
-      setPostTick((t) => t + 1)
-    }, 3000)
+      setFadingBars(fade)
+      setTimeout(() => setFadingBars({}), 210)
+    }, 2700)
     return () => clearInterval(id)
   }, [])
 
   useEffect(() => {
     const id = setInterval(() => {
-      setPlatforms((prev) =>
-        prev.map((p) => {
-          const delta = rInt(-12, 15)
-          return { ...p, val: Math.max(10, Math.min(98, p.val + delta)) }
-        }),
-      )
+      const vals = normalizeDemo([
+        rInt(25, 44),
+        rInt(32, 48),
+        rInt(10, 20),
+        rInt(6, 14),
+      ])
+      setDemo((prev) => prev.map((d, i) => ({ ...d, val: vals[i] })))
+      const fade = {}
+      DEMO_INIT.forEach((_, i) => {
+        fade[i] = true
+      })
+      setFadingDemo(fade)
+      setTimeout(() => setFadingDemo({}), 300)
+    }, 3800)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setInboxFlash(true)
+      setTimeout(() => {
+        setInboxIdx((prev) => {
+          const used = new Set(prev)
+          const next = pickUnused(used, MSG_POOL.length)
+          return [next, prev[0]]
+        })
+        setInboxFlash(false)
+      }, 260)
     }, 2500)
     return () => clearInterval(id)
   }, [])
 
   useEffect(() => {
     const id = setInterval(() => {
-      setActiveInbox((prev) => {
-        const used = new Set([prev[0]])
-        const next = pickUnusedIndex(used, MSG_POOL.length)
-        return [next, prev[0]]
-      })
-      setInboxTick((t) => t + 1)
-    }, 2600)
+      setPostFlash(true)
+      setTimeout(() => {
+        setPostIdx((i) => (i + 1) % POSTS_POOL.length)
+        setPostFlash(false)
+      }, 260)
+    }, 3600)
     return () => clearInterval(id)
   }, [])
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      let v = [rInt(25, 45), rInt(32, 48), rInt(10, 22), rInt(4, 12), rInt(2, 6)]
-      const s = v.reduce((a, b) => a + b, 0)
-      v = v.map((x) => Math.round((x / s) * 100))
-      v[0] += 100 - v.reduce((a, b) => a + b, 0)
-      startPieAnim(v)
-
-      const totalF = Math.round(rand(220, 280))
-      setPieCenterFading(true)
-      setTimeout(() => {
-        setPieCenter(`${totalF}K`)
-        setPieCenterFading(false)
-      }, 220)
-    }, 3500)
-    return () => clearInterval(id)
-  }, [startPieAnim])
-
-  const sparkMax = Math.max(...sparkHistory)
-
-  const handleCardMove = (e) => {
-    const card = e.currentTarget
-    const r = card.getBoundingClientRect()
-    const x = (((e.clientX - r.left) / r.width) * 100).toFixed(1)
-    const y = (((e.clientY - r.top) / r.height) * 100).toFixed(1)
-    card.style.background = `radial-gradient(circle at ${x}% ${y}%, #fefefe 0%, #fff 55%)`
-  }
-
-  const handleCardLeave = (e) => {
-    e.currentTarget.style.background = '#fff'
-  }
-
-  const demTotal = demVals.reduce((a, b) => a + b, 0)
+  const sparkMax = Math.max(...sparkH)
+  const post = POSTS_POOL[postIdx]
 
   return (
     <div
-      className="hero-dash"
-      role="img"
-      aria-label="Animated Metriwo analytics dashboard preview"
+      ref={scalerRef}
+      className="hero-orbit-scaler"
+      style={{ height: SCENE_SIZE * scale }}
     >
-      <div className="blob b1" aria-hidden />
-      <div className="blob b2" aria-hidden />
+      <div
+        className="hero-orbit-scene"
+        style={{ transform: `scale(${scale})` }}
+        role="img"
+        aria-label="Animated Metriwo social analytics orbit dashboard"
+      >
+        <svg className="hero-orbit-rings" viewBox="0 0 580 580" aria-hidden>
+          <circle
+            cx="290"
+            cy="290"
+            r="140"
+            fill="none"
+            stroke="#d4d4d8"
+            strokeWidth="1.5"
+            strokeDasharray="8 7"
+          />
+          <circle
+            cx="290"
+            cy="290"
+            r="235"
+            fill="none"
+            stroke="#d4d4d8"
+            strokeWidth="1.5"
+            strokeDasharray="10 8"
+          />
+        </svg>
 
-      <div className="row">
-        <div
-          className="card"
-          style={{ flex: 1.15, animationDelay: '0.05s' }}
-          onMouseMove={handleCardMove}
-          onMouseLeave={handleCardLeave}
-        >
-          <div className="lbl">Total Followers</div>
-          <div className="stat">{fStat}</div>
-          <div className={`badge ${fBadge.up ? 'bu' : 'bd-neg'} ${fBadge.fading ? 'fading' : ''}`}>
-            {fBadge.text}
-          </div>
-          <div className="prow">
-            <div className="picon pi-ig" title="Instagram">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <rect x="2" y="2" width="20" height="20" rx="5" />
-                <circle cx="12" cy="12" r="5" />
-                <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none" />
-              </svg>
-            </div>
-            <div className="picon pi-fb">f</div>
-            <div className="picon pi-x">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white" aria-hidden>
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </div>
-            <div className="picon pi-li">in</div>
-            <div className="picon pi-tt">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.75a8.18 8.18 0 004.78 1.52V6.82a4.85 4.85 0 01-1.01-.13z" fill="#69C9D0" />
-                <path d="M18.59 5.69a4.83 4.83 0 01-3.77-4.25V1h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V8.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V7.75a8.18 8.18 0 004.78 1.52V5.82a4.85 4.85 0 01-1.01-.13z" fill="white" />
-              </svg>
-            </div>
-          </div>
+        <div className="center-portrait">
+          <img
+            src={portraitSrc}
+            alt="Metriwo creator"
+            loading="eager"
+            decoding="async"
+            onError={() => {
+              setPortraitIndex((i) =>
+                i < PORTRAIT_SOURCES.length - 1 ? i + 1 : i,
+              )
+            }}
+          />
         </div>
 
+        {/* Inner: Engagement */}
         <div
-          className="card"
-          style={{ flex: 0.85, animationDelay: '0.12s' }}
-          onMouseMove={handleCardMove}
-          onMouseLeave={handleCardLeave}
+          className="orbit-card orbit-float-f0"
+          style={{ left: 345, top: 155, width: 112, padding: '9px 10px' }}
         >
-          <div className="lbl">Avg. Engagement</div>
-          <div className="stat">{eStat}</div>
-          <div className={`badge ${eBadge.up ? 'bu' : 'bd-neg'} ${eBadge.fading ? 'fading' : ''}`}>
+          <div className="lbl">Engagement</div>
+          <div className="num lg">{eNum}</div>
+          <div
+            className={`bdg ${eBadge.up ? 'bu' : 'bd'}`}
+            style={{
+              opacity: eBadge.flash ? 0 : 1,
+              transform: eBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
+            }}
+          >
             {eBadge.text}
           </div>
-          <div className="spark">
-            {sparkHistory.map((h, i) => {
-              const intense = i >= 5
-              const mid = i >= 3
-              return (
-                <div
-                  key={i}
-                  className="sb"
-                  style={{
-                    height: `${(h / sparkMax) * 100}%`,
-                    background: intense ? '#5B3AFF' : mid ? '#A29BFE' : '#D2CEFD',
-                  }}
-                />
-              )
-            })}
+        </div>
+
+        {/* Inner: Reach */}
+        <div
+          className="orbit-card orbit-float-f1"
+          style={{
+            left: 108,
+            top: 238,
+            width: 74,
+            padding: '8px 9px',
+            animationDelay: '1.1s',
+          }}
+        >
+          <div className="lbl xs">Reach</div>
+          <div className="num sm">{rchNum}</div>
+          <div
+            className={`bdg xs ${rchBadge.up ? 'bu' : 'bd'}`}
+            style={{
+              opacity: rchBadge.flash ? 0 : 1,
+              transform: rchBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
+            }}
+          >
+            {rchBadge.text}
           </div>
         </div>
-      </div>
 
-      <div className="row">
+        {/* Inner: Scheduled */}
         <div
-          className="card"
-          style={{ flex: 1.1, animationDelay: '0.2s' }}
-          onMouseMove={handleCardMove}
-          onMouseLeave={handleCardLeave}
+          className="orbit-card orbit-float-f2"
+          style={{
+            left: 188,
+            top: 392,
+            width: 120,
+            padding: '8px 10px',
+            animationDelay: '2.3s',
+          }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div className="card-header">
             <div className="lbl" style={{ margin: 0 }}>
-              Scheduled Posts
+              Scheduled
             </div>
             <div className="live-pill">
-              <div className="live-dot" />
+              <span className="live-pill-dot" />
               Live
             </div>
           </div>
-          <div className="post-list">
-            {activePosts.slice(0, 3).map((idx, i) => {
-              const p = ALL_POSTS[idx]
-              return (
-                <div
-                  key={`${postTick}-${idx}-${i}`}
-                  className="post-item"
-                  style={{ animationDelay: `${i * 80 + 20}ms` }}
-                >
-                  <div className="post-thumb" style={{ background: p.bg }}>
-                    {p.emoji}
-                  </div>
-                  <div className="post-meta">
-                    <div className="post-title">{p.title}</div>
-                    <div className="post-time">{p.time}</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-                    <div className="pr-num">{p.reach}</div>
-                    <div className={`post-status ${p.status === 'pub' ? 'st-pub' : 'st-sched'}`}>
-                      {p.status === 'pub' ? 'Published' : 'Scheduled'}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+          <div
+            className="sched-row"
+            style={{
+              opacity: postFlash ? 0 : 1,
+              transform: postFlash ? 'translateX(-4px)' : 'translateX(0)',
+            }}
+          >
+            <div className="sched-em" style={{ background: post.bg }}>
+              {post.emoji}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div className="sched-title">{post.title}</div>
+              <div className="sched-date">{post.date}</div>
+            </div>
           </div>
         </div>
 
+        {/* Outer: Followers */}
         <div
-          className="card"
-          style={{ flex: 0.9, animationDelay: '0.28s', display: 'flex', flexDirection: 'column' }}
-          onMouseMove={handleCardMove}
-          onMouseLeave={handleCardLeave}
+          className="orbit-card orbit-float-f3"
+          style={{
+            left: 44,
+            top: 44,
+            width: 148,
+            padding: '10px 12px',
+            animationDelay: '0.5s',
+          }}
         >
-          <div className="lbl">Platform Reach</div>
-          {platforms.map((p, i) => (
-            <div key={p.lbl} className="bar-row">
-              <span className="bar-lbl" style={{ color: p.color }}>
-                {p.lbl}
+          <div className="lbl">Total Followers</div>
+          <div className="num">{fNum}</div>
+          <div
+            className={`bdg ${fBadge.up ? 'bu' : 'bd'}`}
+            style={{
+              opacity: fBadge.flash ? 0 : 1,
+              transform: fBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
+            }}
+          >
+            {fBadge.text}
+          </div>
+          <div className="sp">
+            {sparkH.map((h, i) => (
+              <div
+                key={i}
+                className="sb"
+                style={{
+                  height: `${(h / sparkMax) * 100}%`,
+                  background: sparkColor(i),
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Outer: Posts Today */}
+        <div
+          className="orbit-card orbit-float-f4"
+          style={{
+            left: 422,
+            top: 92,
+            width: 86,
+            padding: '8px 10px',
+            animationDelay: '1.9s',
+          }}
+        >
+          <div className="lbl xs">Posts Today</div>
+          <div className="num md">{postsNum}</div>
+          <div
+            className={`bdg xs ${postsBadge.up ? 'bu' : 'bd'}`}
+            style={{
+              opacity: postsBadge.flash ? 0 : 1,
+              transform: postsBadge.flash ? 'translateY(-3px)' : 'translateY(0)',
+            }}
+          >
+            {postsBadge.text}
+          </div>
+        </div>
+
+        {/* Outer: Platform Reach */}
+        <div
+          className="orbit-card orbit-float-f5"
+          style={{
+            left: 448,
+            top: 302,
+            width: 136,
+            padding: '9px 11px',
+            animationDelay: '3.2s',
+          }}
+        >
+          <div className="card-header tight">
+            <div className="lbl" style={{ margin: 0 }}>
+              Platform Reach
+            </div>
+            <span className="live-dot-sm" />
+          </div>
+          {bars.map((b, i) => (
+            <div key={b.lbl} className="br">
+              <span className="bar-lbl" style={{ color: b.color }}>
+                {b.lbl}
               </span>
-              <div className="bar-track">
-                <div className="bar-fill" style={{ width: `${p.val}%`, background: p.color }} />
+              <div className="bt">
+                <div
+                  className="bf"
+                  style={{
+                    width: `${b.val}%`,
+                    background: b.color,
+                    animationDelay: `${i * 0.1}s`,
+                  }}
+                />
               </div>
-              <span className="bar-val">{p.val}%</span>
+              <span className="bar-val" style={{ opacity: fadingBars[i] ? 0 : 1 }}>
+                {b.val}%
+              </span>
             </div>
           ))}
-          <hr className="inbox-sep" />
-          <div className="lbl" style={{ marginBottom: 6 }}>
+        </div>
+
+        {/* Outer: Inbox */}
+        <div
+          className="orbit-card orbit-float-f6"
+          style={{
+            left: 332,
+            top: 462,
+            width: 138,
+            padding: '9px 11px',
+            animationDelay: '0.8s',
+          }}
+        >
+          <div className="lbl" style={{ marginBottom: 4 }}>
             Inbox
           </div>
-          {activeInbox.slice(0, 2).map((idx, i) => {
+          {inboxIdx.map((idx, i) => {
             const m = MSG_POOL[idx]
             return (
               <div
-                key={`${inboxTick}-${idx}-${i}`}
-                className="msg-row"
-                style={{ animationDelay: `${i * 60 + 10}ms` }}
+                key={`${idx}-${i}`}
+                className={`inbox-row${i === 0 ? ' bordered' : ''}`}
+                style={{
+                  opacity: inboxFlash ? 0 : 1,
+                  transform: inboxFlash ? 'translateY(-4px)' : 'translateY(0)',
+                }}
               >
-                <div
-                  className="avatar"
-                  style={{ background: AVATAR_COLORS[idx % AVATAR_COLORS.length] }}
-                >
+                <div className="av" style={{ background: m.color }}>
                   {m.initials}
                 </div>
-                <div className="msg-info">
-                  <div className="msg-name">{m.name}</div>
-                  <div className="msg-text">{m.text}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="inbox-name">{m.name}</div>
+                  <div className="inbox-text">{m.text}</div>
                 </div>
-                <div className="udot" />
+                <div
+                  className="udot"
+                  style={{ animationDelay: i === 0 ? '0.2s' : '0.7s' }}
+                />
               </div>
             )
           })}
         </div>
-      </div>
 
-      <div
-        className="card"
-        style={{ animationDelay: '0.36s' }}
-        onMouseMove={handleCardMove}
-        onMouseLeave={handleCardLeave}
-      >
-        <div className="lbl">Follower Demographics</div>
-        <div className="pie-wrap">
-          <div className="pie-cw">
-            <canvas ref={pieRef} id="pieC" width={100} height={100} aria-hidden />
-            <div className="pie-center">
-              <div className={`pie-cn ${pieCenterFading ? 'fading' : ''}`}>{pieCenter}</div>
-              <div className="pie-cl">total</div>
-            </div>
-          </div>
-          <div className="legend">
-            {demVals.map((v, i) => {
-              const pct = Math.round((v / demTotal) * 100)
-              return (
-                <div key={DEM_LABELS[i]} className="leg-item">
-                  <div className="leg-dot" style={{ background: DEM_COLORS[i] }} />
-                  <span className="leg-name">{DEM_LABELS[i]}</span>
-                  <div className="leg-bw">
-                    <div
-                      className="leg-bf"
-                      style={{ width: `${pct}%`, background: DEM_COLORS[i] }}
-                    />
-                  </div>
-                  <span className="leg-pct">{pct}%</span>
+        {/* Outer: Demographics */}
+        <div
+          className="orbit-card orbit-float-f7"
+          style={{
+            left: 18,
+            top: 348,
+            width: 112,
+            padding: '8px 10px',
+            animationDelay: '2.7s',
+          }}
+        >
+          <div className="lbl">Demographics</div>
+          <div className="demo-list">
+            {demo.map((d, i) => (
+              <div key={d.label} className="demo-row">
+                <div className="demo-dot" style={{ background: d.color }} />
+                <span className="demo-label">{d.label}</span>
+                <div className="demo-track">
+                  <div
+                    className="demo-fill"
+                    style={{ width: `${d.val}%`, background: d.color }}
+                  />
                 </div>
-              )
-            })}
+                <span className="demo-pct" style={{ opacity: fadingDemo[i] ? 0 : 1 }}>
+                  {d.val}%
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

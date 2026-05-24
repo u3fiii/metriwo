@@ -1,0 +1,317 @@
+.feature-scheduler-viewport {
+  width: 400px;
+  height: 400px;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.feature-scheduler-shell {
+  width: 400px;
+  height: 400px;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+}
+
+.feature-scheduler-shell .fs-tbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0eef8;
+  background: #fafafe;
+  flex-shrink: 0;
+}
+
+.feature-scheduler-shell .fs-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.feature-scheduler-shell .fs-tbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #9b97b2;
+}
+
+.feature-scheduler-shell .fs-tbar-date {
+  font-size: 8.5px;
+  color: #9b97b2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feature-scheduler-shell .fs-body {
+  flex: 1;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.feature-scheduler-shell .fs-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.feature-scheduler-shell .fs-cal-month {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1433;
+}
+
+.feature-scheduler-shell .fs-cal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-scheduler-shell .fs-sched-count {
+  font-size: 8px;
+  font-weight: 600;
+  color: #6c5ce7;
+  background: #eef0ff;
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+
+.feature-scheduler-shell .fs-cal-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.feature-scheduler-shell .fs-nav-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #f5f3ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #9b97b2;
+  border: none;
+  font-family: inherit;
+  line-height: 1;
+  padding: 0;
+}
+
+.feature-scheduler-shell .fs-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  flex: 1;
+  min-height: 0;
+}
+
+.feature-scheduler-shell .fs-day-hdr {
+  font-size: 8px;
+  font-weight: 600;
+  color: #c0bdd4;
+  text-align: center;
+  padding: 2px 0;
+  align-self: start;
+}
+
+.feature-scheduler-shell .fs-day-cell {
+  border-radius: 8px;
+  background: #fafafe;
+  min-height: 42px;
+  padding: 4px 5px;
+  position: relative;
+  border: 1.5px solid transparent;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.feature-scheduler-shell .fs-day-cell.empty {
+  background: transparent;
+  border-color: transparent !important;
+}
+
+.feature-scheduler-shell .fs-day-cell.today {
+  background: #eef0ff;
+  border-color: rgba(108, 92, 231, 0.2) !important;
+}
+
+.feature-scheduler-shell .fs-day-cell.has-post {
+  background: #fafafe;
+}
+
+.feature-scheduler-shell .fs-day-cell.hovered {
+  background: #eef0ff;
+  border-color: #6c5ce7 !important;
+}
+
+.feature-scheduler-shell .fs-day-cell.clicked {
+  background: #6c5ce7;
+  border-color: #6c5ce7 !important;
+}
+
+.feature-scheduler-shell .fs-day-cell.clicked .fs-day-num {
+  color: #fff;
+}
+
+.feature-scheduler-shell .fs-day-num {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: #6b6880;
+  line-height: 1;
+}
+
+.feature-scheduler-shell .fs-day-cell.today .fs-day-num {
+  color: #6c5ce7;
+}
+
+.feature-scheduler-shell .fs-post-chip {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 7px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.feature-scheduler-shell .fs-chip-pub {
+  background: #e6f9f0;
+  color: #1d9e75;
+}
+
+.feature-scheduler-shell .fs-chip-sched {
+  background: #eef0ff;
+  color: #6c5ce7;
+}
+
+.feature-scheduler-shell .fs-chip-pop {
+  animation: fs-chipPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes fs-chipPop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.feature-scheduler-shell .fs-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  transition:
+    left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: left, top;
+}
+
+@keyframes fs-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.feature-scheduler-shell .fs-ripple {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(108, 92, 231, 0.35);
+  transform: scale(0);
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  margin: -12px 0 0 -12px;
+  animation: fs-ripple 0.5s ease forwards;
+}
+
+@keyframes fs-snackIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes fs-snackOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px) scale(0.95);
+  }
+}
+
+.feature-scheduler-shell .fs-snackbar {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1433;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 24px;
+  white-space: nowrap;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.feature-scheduler-shell .fs-snackbar.in {
+  animation: fs-snackIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.feature-scheduler-shell .fs-snackbar.out {
+  animation: fs-snackOut 0.3s ease forwards;
+}
+
+.feature-scheduler-shell .fs-snack-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00b894;
+  flex-shrink: 0;
+}
+
+.feature-artwork--scheduler {
+  width: 400px;
+  max-width: 400px;
+  height: 400px;
+  margin-inline: auto;
+}

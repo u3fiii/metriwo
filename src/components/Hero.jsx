@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
-import { SiFacebook, SiInstagram, SiTiktok, SiYoutube } from 'react-icons/si'
 import HeroArtwork from './hero/HeroArtwork'
+import HeroAuthModal from './hero/HeroAuthModal'
+import { DEFAULT_PLATFORM, PLATFORMS } from './hero/constants/platforms'
 
 function PlatformLogo({ Icon, className = 'h-4 w-4 shrink-0' }) {
   return <Icon className={className} aria-hidden />
@@ -41,46 +42,10 @@ function useTypewriter(
     return () => clearTimeout(timeout)
   }, [text, deleting, index, strings, typingDelay, deletingDelay, pauseMs, switchDelay])
 
-  return { text }
+  return { text, index }
 }
 
-const PLATFORMS = [
-  {
-    id: 'youtube',
-    label: 'YouTube',
-    typewriter: 'YouTube',
-    color: '#FF0000',
-    Icon: SiYoutube,
-  },
-  {
-    id: 'instagram',
-    label: 'Instagram',
-    typewriter: 'Instagram',
-    color: '#E1306C',
-    Icon: SiInstagram,
-  },
-  {
-    id: 'tiktok',
-    label: 'TikTok',
-    typewriter: 'TikTok',
-    color: '#010101',
-    Icon: SiTiktok,
-  },
-  {
-    id: 'facebook',
-    label: 'Facebook',
-    typewriter: 'Facebook',
-    color: '#1877F2',
-    Icon: SiFacebook,
-  },
-]
-
 const MOCK_ACCOUNTS = {
-  youtube: [
-    { username: 'mkbhd', name: 'Marques Brownlee', followers: '19.8M' },
-    { username: 'mrbeast', name: 'MrBeast', followers: '321M' },
-    { username: 'linus', name: 'Linus Tech Tips', followers: '16.2M' },
-  ],
   instagram: [
     { username: 'nike', name: 'Nike', followers: '306M' },
     { username: 'natgeo', name: 'National Geographic', followers: '283M' },
@@ -91,10 +56,20 @@ const MOCK_ACCOUNTS = {
     { username: 'khaby.lame', name: 'Khabane Lame', followers: '162M' },
     { username: 'bellapoarch', name: 'Bella Poarch', followers: '93M' },
   ],
+  linkedin: [
+    { username: 'microsoft', name: 'Microsoft', followers: '22M' },
+    { username: 'satyanadella', name: 'Satya Nadella', followers: '11M' },
+    { username: 'google', name: 'Google', followers: '32M' },
+  ],
   facebook: [
     { username: 'meta', name: 'Meta', followers: '110M' },
     { username: 'cocacola', name: 'Coca-Cola', followers: '107M' },
     { username: 'nike', name: 'Nike', followers: '39M' },
+  ],
+  x: [
+    { username: 'elonmusk', name: 'Elon Musk', followers: '198M' },
+    { username: 'nasa', name: 'NASA', followers: '82M' },
+    { username: 'openai', name: 'OpenAI', followers: '4.2M' },
   ],
 }
 
@@ -140,13 +115,17 @@ function getDisplayAccounts(query, platformId) {
 }
 
 export default function Hero() {
-  const { text: typewriterText } = useTypewriter(PLATFORMS.map((p) => p.typewriter))
+  const { text: typewriterText, index: typewriterIndex } = useTypewriter(
+    PLATFORMS.map((p) => p.typewriter),
+  )
+  const typewriterPlatform = PLATFORMS[typewriterIndex % PLATFORMS.length]
 
-  const [platform, setPlatform] = useState(PLATFORMS[1])
+  const [platform, setPlatform] = useState(DEFAULT_PLATFORM)
   const [platformOpen, setPlatformOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [accountsOpen, setAccountsOpen] = useState(false)
-  const [selectedAccount, setSelectedAccount] = useState(null)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [authAccount, setAuthAccount] = useState(null)
   const searchRef = useRef(null)
   const platformRef = useRef(null)
 
@@ -167,14 +146,19 @@ export default function Hero() {
 
   function handleQueryChange(value) {
     setQuery(value)
-    setSelectedAccount(null)
     setAccountsOpen(value.trim().length > 0)
   }
 
   function selectAccount(account) {
-    setSelectedAccount(account)
+    setAuthAccount(account)
     setQuery(account.username)
     setAccountsOpen(false)
+    setAuthModalOpen(true)
+  }
+
+  function closeAuthModal() {
+    setAuthModalOpen(false)
+    setAuthAccount(null)
   }
 
   return (
@@ -184,14 +168,30 @@ export default function Hero() {
 
         {/* Title, subtitle, search — right */}
         <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left lg:gap-2">
-          <h1 className="text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:text-2xl">
+          <h1 className="overflow-visible text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:text-2xl">
             Scale your brand on{' '}
-            <span className="inline-block min-w-[11ch] text-left font-bold text-zinc-900 lg:mt-2 lg:text-7xl">
-              {typewriterText}
+            <span
+              className="typewriter-slot inline-flex min-w-[11ch] shrink-0 items-baseline overflow-visible pb-px text-left font-bold leading-tight h-10 text-2xl sm:h-12 sm:text-4xl lg:mt-2 lg:h-[5.25rem] lg:pb-0.5 lg:text-7xl"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               <span
-                className="ml-0.5 inline-block w-[3px] bg-zinc-900 align-middle "
+                className="inline-block transition-[background-image] duration-300"
+                style={{
+                  backgroundImage: typewriterPlatform.typewriterGradient,
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {typewriterText}
+              </span>
+              <span
+                className="ml-0.5 inline-block w-[3px] shrink-0 align-middle transition-[background] duration-300"
                 style={{
                   height: '0.85em',
+                  background: typewriterPlatform.typewriterGradient,
                   animation: 'blink-cursor 1s step-end infinite',
                 }}
                 aria-hidden
@@ -254,7 +254,6 @@ export default function Hero() {
                           onClick={() => {
                             setPlatform(p)
                             setPlatformOpen(false)
-                            setSelectedAccount(null)
                           }}
                           className={`flex w-full items-center gap-2.5 rounded-lg p-2 text-left text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 ${
                             platform.id === p.id ? 'bg-zinc-100 text-zinc-900' : ''
@@ -303,26 +302,17 @@ export default function Hero() {
               </ul>
             )}
 
-            {/* Selected account preview */}
-            {selectedAccount && (
-              <div className="mt-4 rounded-lg bg-white px-5 py-4 text-left shadow-[0_8px_30px_rgba(0,0,0,0.06)] ring-1 ring-zinc-100">
-                <p className="text-xs font-medium uppercase tracking-wide text-[#5B3AFF]">
-                  {platform.label} profile
-                </p>
-                <p className="mt-1 text-lg font-semibold text-zinc-900">
-                  {selectedAccount.name}
-                </p>
-                <p className="text-sm font-light text-zinc-500">
-                  @{selectedAccount.username} · {selectedAccount.followers} followers
-                </p>
-                <p className="mt-2 text-xs font-light text-zinc-400">
-                  Account data preview — full analytics coming in the next step.
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
+
+      <HeroAuthModal
+        open={authModalOpen}
+        onClose={closeAuthModal}
+        account={authAccount}
+        platformLabel={platform.label}
+        platformColor={platform.color}
+      />
     </section>
   )
 }

@@ -346,37 +346,55 @@ body::-webkit-scrollbar {
 
 /* Platforms bento section */
 .platforms-bento {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.platforms-bento__row {
   display: grid;
   gap: 1rem;
 }
 
+.platforms-bento__row--featured {
+  grid-template-columns: 1fr;
+}
+
+.platforms-bento__row--secondary {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .platforms-bento__row--secondary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (min-width: 1024px) {
   .platforms-bento {
-    grid-template-columns: 1.35fr 1fr;
-    grid-template-rows: auto auto;
     gap: 1.25rem;
   }
 
-  .platforms-bento__tiktok {
-    grid-column: 1;
-    grid-row: 1;
+  .platforms-bento__row--featured {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
   }
 
-  .platforms-bento__instagram {
-    grid-column: 2;
-    grid-row: 1;
+  .platforms-bento__row--featured .platform-card--featured {
     min-height: 22rem;
   }
 
-  .platforms-bento__youtube {
-    grid-column: 1;
-    grid-row: 2;
-    min-height: 22rem;
+  .platforms-bento__row--secondary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
   }
+}
 
-  .platforms-bento__facebook {
-    grid-column: 2;
-    grid-row: 2;
+@media (min-width: 640px) and (max-width: 1023px) {
+  .platforms-bento__row--secondary .platform-card:last-child {
+    grid-column: 1 / -1;
+    max-width: calc(50% - 0.5rem);
+    justify-self: center;
   }
 }
 
@@ -390,9 +408,17 @@ body::-webkit-scrollbar {
   padding: 1.5rem;
 }
 
+.platform-card--compact .platform-card__inner {
+  padding: 1.25rem;
+}
+
 @media (min-width: 640px) {
   .platform-card__inner {
     padding: 2rem;
+  }
+
+  .platform-card--compact .platform-card__inner {
+    padding: 1.5rem;
   }
 }
 
@@ -554,4 +580,53 @@ body::-webkit-scrollbar {
 .platform-art-controls__btn--plus {
   background: #ef4444;
   color: white;
+}
+
+.platform-art--priority-compact {
+  max-width: 100%;
+  gap: 0.4rem;
+}
+
+.platform-art--priority-compact .platform-art-priority__row {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.platform-art--x-threads {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 5.5rem;
+  padding: 0.25rem;
+}
+
+.platform-art-x-post {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 11rem;
+  border-radius: 0.75rem;
+  background: white;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #18181b;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.platform-art-x-post__logo {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f1419;
+  flex-shrink: 0;
+}
+
+.platform-art-x-post__text {
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
