@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
 import HeroArtwork from './hero/HeroArtwork'
 import HeroAuthModal from './hero/HeroAuthModal'
-import { DEFAULT_PLATFORM, PLATFORMS } from './hero/constants/platforms'
+import {
+  DEFAULT_PLATFORM,
+  PLATFORMS,
+  TYPEWRITER_MAX_LABEL,
+} from './hero/constants/platforms'
 
 function PlatformLogo({ Icon, className = 'h-4 w-4 shrink-0' }) {
   return <Icon className={className} aria-hidden />
@@ -121,6 +125,7 @@ export default function Hero() {
   const typewriterPlatform = PLATFORMS[typewriterIndex % PLATFORMS.length]
 
   const [platform, setPlatform] = useState(DEFAULT_PLATFORM)
+  const [searchPlaceholder, setSearchPlaceholder] = useState('username')
   const [platformOpen, setPlatformOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [accountsOpen, setAccountsOpen] = useState(false)
@@ -130,6 +135,16 @@ export default function Hero() {
   const platformRef = useRef(null)
 
   const displayAccounts = getDisplayAccounts(query, platform.id)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const syncPlaceholder = () => {
+      setSearchPlaceholder(mq.matches ? 'Enter any name or username' : 'username')
+    }
+    syncPlaceholder()
+    mq.addEventListener('change', syncPlaceholder)
+    return () => mq.removeEventListener('change', syncPlaceholder)
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -163,39 +178,50 @@ export default function Hero() {
 
   return (
     <section className="relative z-[1] flex min-h-screen flex-col px-4 pb-6 pt-20 sm:px-6 lg:pt-24">
-      <div className="mx-auto flex  w-full max-w-6xl flex-1 flex-col items-center justify-center gap-0 lg:flex-row-reverse lg:items-center lg:gap-0 lg:px-20 xl:max-w-7xl xl:gap-0 ">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-6 sm:gap-8 lg:flex-row-reverse lg:items-center lg:gap-0 lg:px-20 xl:max-w-7xl xl:gap-0">
         <HeroArtwork />
 
         {/* Title, subtitle, search — right */}
         <div className="flex w-full flex-1 flex-col items-center text-center lg:items-start lg:text-left lg:gap-2">
-          <h1 className="overflow-visible text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:text-2xl">
-            Scale your brand on{' '}
+          <h1 className="flex flex-col items-center gap-5 overflow-visible text-center text-2xl font-medium leading-tight tracking-tight text-zinc-900 sm:text-4xl lg:block lg:gap-0 lg:text-left lg:text-2xl">
+            <span className="lg:inline">Scale your brand on </span>
             <span
-              className="typewriter-slot inline-flex min-w-[11ch] shrink-0 items-baseline overflow-visible pb-px text-left font-bold leading-tight h-10 text-2xl sm:h-12 sm:text-4xl lg:mt-2 lg:h-[5.25rem] lg:pb-0.5 lg:text-7xl"
+              className="typewriter-slot relative mx-auto inline-block shrink-0 overflow-visible text-center font-bold lg:mx-0 lg:mt-2 lg:text-left"
               aria-live="polite"
               aria-atomic="true"
             >
+              {/* Invisible sizer — locks width & height (no shift while typing) */}
               <span
-                className="inline-block transition-[background-image] duration-300"
-                style={{
-                  backgroundImage: typewriterPlatform.typewriterGradient,
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  color: 'transparent',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                {typewriterText}
-              </span>
-              <span
-                className="ml-0.5 inline-block w-[3px] shrink-0 align-middle transition-[background] duration-300"
-                style={{
-                  height: '0.85em',
-                  background: typewriterPlatform.typewriterGradient,
-                  animation: 'blink-cursor 1s step-end infinite',
-                }}
+                className="invisible inline-flex items-baseline whitespace-nowrap text-[40px] leading-[1.2] pb-[0.12em] lg:text-7xl lg:leading-none lg:pb-0"
                 aria-hidden
-              />
+              >
+                {TYPEWRITER_MAX_LABEL}
+                <span className="ml-0.5 inline-block w-[3px] shrink-0" />
+              </span>
+              {/* Visible layer — absolute so partial text never changes box size */}
+              <span className="absolute inset-0 inline-flex items-baseline justify-center whitespace-nowrap text-[40px] leading-[1.2] pb-[0.12em] lg:justify-start lg:text-7xl lg:leading-none lg:pb-0">
+                <span
+                  className="inline-block transition-[background-image] duration-300"
+                  style={{
+                    backgroundImage: typewriterPlatform.typewriterGradient,
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    color: 'transparent',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  {typewriterText}
+                </span>
+                <span
+                  className="ml-0.5 inline-block w-[3px] shrink-0 align-middle transition-[background] duration-300"
+                  style={{
+                    height: '0.85em',
+                    background: typewriterPlatform.typewriterGradient,
+                    animation: 'blink-cursor 1s step-end infinite',
+                  }}
+                  aria-hidden
+                />
+              </span>
             </span>
           </h1>
 
@@ -220,7 +246,7 @@ export default function Hero() {
                 onFocus={() => {
                   if (query.trim()) setAccountsOpen(true)
                 }}
-                placeholder="Enter any name or username"
+                placeholder={searchPlaceholder}
                 className="min-w-0 flex-1 bg-transparent py-2 text-sm text-zinc-900 outline-none placeholder:font-light placeholder:text-zinc-400"
               />
 

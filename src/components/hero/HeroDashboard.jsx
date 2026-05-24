@@ -269,16 +269,7 @@ export default function HeroDashboard() {
         role="img"
         aria-label="Animated Metriwo social analytics orbit dashboard"
       >
-        <svg className="hero-orbit-rings" viewBox="0 0 580 580" aria-hidden>
-          <circle
-            cx="290"
-            cy="290"
-            r="140"
-            fill="none"
-            stroke="#d4d4d8"
-            strokeWidth="1.5"
-            strokeDasharray="8 7"
-          />
+        <svg className="hero-orbit-rings hero-orbit-rings--outer" viewBox="0 0 580 580" aria-hidden>
           <circle
             cx="290"
             cy="290"
@@ -287,6 +278,17 @@ export default function HeroDashboard() {
             stroke="#d4d4d8"
             strokeWidth="1.5"
             strokeDasharray="10 8"
+          />
+        </svg>
+        <svg className="hero-orbit-rings hero-orbit-rings--inner" viewBox="0 0 580 580" aria-hidden>
+          <circle
+            cx="290"
+            cy="290"
+            r="140"
+            fill="none"
+            stroke="#d4d4d8"
+            strokeWidth="1.5"
+            strokeDasharray="8 7"
           />
         </svg>
 

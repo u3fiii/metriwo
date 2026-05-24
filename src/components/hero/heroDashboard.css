@@ -16,6 +16,24 @@
 }
 
 /* SVG rings — avoids Tailwind's `.ring` utility conflicting with border styles */
+@keyframes orbit-rings-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-rings-rotate-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
 .hero-orbit-rings {
   position: absolute;
   inset: 0;
@@ -23,6 +41,15 @@
   height: 100%;
   z-index: 1;
   pointer-events: none;
+  transform-origin: center;
+}
+
+.hero-orbit-rings--outer {
+  animation: orbit-rings-rotate 48s linear infinite;
+}
+
+.hero-orbit-rings--inner {
+  animation: orbit-rings-rotate-reverse 48s linear infinite;
 }
 
 .hero-orbit-scene .center-portrait {
@@ -197,7 +224,6 @@
   border: 1.5px solid transparent;
   z-index: 4;
   transition:
-    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.22s,
     border-color 0.22s;
 }
@@ -205,7 +231,6 @@
 .hero-orbit-scene .orbit-card:hover {
   box-shadow: 0 12px 32px rgba(91, 58, 255, 0.22) !important;
   border-color: #5b3aff !important;
-  transform: scale(1.07) !important;
 }
 
 .hero-orbit-scene .lbl {

@@ -53,6 +53,12 @@ export const PLATFORMS = [
   },
 ]
 
+/** Longest typewriter label — reserves space to prevent layout shift while typing. */
+export const TYPEWRITER_MAX_LABEL = PLATFORMS.reduce(
+  (longest, p) => (p.typewriter.length > longest.length ? p.typewriter : longest),
+  '',
+)
+
 /** Default platform when the hero loads (Instagram). */
 export const DEFAULT_PLATFORM =
   PLATFORMS.find((p) => p.id === 'instagram') ?? PLATFORMS[0]
