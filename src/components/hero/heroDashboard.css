@@ -2,7 +2,7 @@
   width: min(580px, 100%);
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero-tile-scene {
@@ -90,11 +90,23 @@
   width: 158px;
   height: 292px;
   border-radius: 24px;
-  border: 7px solid #000;
+  border: 7px solid #d4d4d8;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   background: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: center center;
+  scale: 1;
+  transition:
+    scale 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: tile-phone-float 6.2s ease-in-out infinite 0.4s;
+}
+
+.hero-tile-scene .tile-screen-wrap:hover {
+  scale: 1.008;
+  border-color: #c8c8cd;
 }
 
 .hero-tile-scene .tile-db {
@@ -632,14 +644,24 @@
   background: #fff;
   border-radius: 13px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   cursor: pointer;
   z-index: 3;
-  transition: border-color 0.22s ease;
+  transform-origin: center center;
+  scale: 1;
+  transition:
+    scale 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hero-tile-scene .tile-card:hover {
+  scale: 1.035;
   border-color: #5b3aff;
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(91, 58, 255, 0.12),
+    0 8px 24px rgba(91, 58, 255, 0.14);
 }
 
 .hero-tile-scene .tile-lbl {

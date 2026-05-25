@@ -101,7 +101,7 @@ export default function CustomScrollbar() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-y-0 right-0 z-[100] flex w-5 justify-center"
+      className="pointer-events-none fixed inset-y-0 right-0 z-[100] hidden w-5 justify-center md:flex"
       aria-hidden
     >
       <div

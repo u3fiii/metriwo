@@ -15,7 +15,7 @@ export default function App() {
     <>
       <PageBackground />
       <DotBackground />
-      <div className="relative z-[1] min-h-screen text-zinc-900">
+      <div className="relative z-[1] min-h-screen overflow-x-clip text-zinc-900">
         <Navbar />
         <main className="relative z-[1]">
           <Hero />

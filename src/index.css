@@ -2,9 +2,16 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
+  overflow-x: clip;
+  overflow-y: auto;
   scrollbar-width: none;
+}
+
+@media (min-width: 768px) {
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
 }
 
 html::-webkit-scrollbar {
@@ -481,6 +488,29 @@ select:disabled,
   grid-template-columns: 1fr;
 }
 
+/* Mobile — hug content, 16px padding, 2-line copy */
+@media (max-width: 639px) {
+  .platforms-bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .platforms-bento__row {
+    display: contents;
+  }
+
+  .platform-card__inner {
+    height: auto;
+    gap: 0.625rem;
+    padding: 16px;
+  }
+
+  .platform-card__copy {
+    flex: none;
+  }
+}
+
 @media (min-width: 640px) {
   .platforms-bento__row--secondary {
     grid-template-columns: repeat(2, 1fr);
@@ -537,42 +567,60 @@ select:disabled,
   align-items: flex-start;
   gap: 0.875rem;
   height: 100%;
-  padding: 24px;
+  padding: 32px;
 }
 
-/* Instagram — soft story-ring blooms */
+/* Instagram — 3 concentric circles (4% white), shared center on the left */
 .platform-card--instagram .platform-card__pattern {
   background-image:
-    radial-gradient(circle at 88% 12%, rgba(255, 255, 255, 0.22) 0%, transparent 42%),
-    radial-gradient(circle at 12% 78%, rgba(255, 255, 255, 0.14) 0%, transparent 38%),
-    radial-gradient(circle at 55% 42%, rgba(255, 255, 255, 0.08) 0%, transparent 32%),
-    repeating-radial-gradient(
-      circle at 100% 0%,
-      transparent 0,
-      transparent 14px,
-      rgba(255, 255, 255, 0.035) 14px,
-      rgba(255, 255, 255, 0.035) 15px
+    radial-gradient(
+      circle at 0% 50%,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 36%,
+      transparent 36.2%
+    ),
+    radial-gradient(
+      circle at 0% 50%,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 58%,
+      transparent 58.2%
+    ),
+    radial-gradient(
+      circle at 0% 50%,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 82%,
+      transparent 82.2%
     );
+  background-repeat: no-repeat;
 }
 
-/* TikTok — cyan / magenta motion streaks */
+/* TikTok — rotated grid + soft teal / red glow */
 .platform-card--tiktok .platform-card__pattern {
   background-image:
     repeating-linear-gradient(
-      -14deg,
+      -5deg,
       transparent 0,
-      transparent 18px,
-      rgba(37, 244, 238, 0.07) 18px,
-      rgba(37, 244, 238, 0.07) 19px
+      transparent 36px,
+      rgba(255, 255, 255, 0.07) 36px,
+      rgba(255, 255, 255, 0.07) 37px
     ),
     repeating-linear-gradient(
-      76deg,
+      85deg,
       transparent 0,
-      transparent 22px,
-      rgba(254, 44, 85, 0.06) 22px,
-      rgba(254, 44, 85, 0.06) 23px
+      transparent 36px,
+      rgba(255, 255, 255, 0.07) 36px,
+      rgba(255, 255, 255, 0.07) 37px
     ),
-    radial-gradient(ellipse 90% 60% at 100% 100%, rgba(37, 244, 238, 0.12) 0%, transparent 55%);
+    radial-gradient(
+      ellipse 85% 55% at 100% 100%,
+      rgba(37, 244, 238, 0.1) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 0% 0%,
+      rgba(254, 44, 85, 0.08) 0%,
+      transparent 52%
+    );
 }
 
 /* LinkedIn — professional dot grid */
@@ -580,38 +628,47 @@ select:disabled,
   background-image:
     radial-gradient(circle, rgba(255, 255, 255, 0.22) 1px, transparent 1px),
     linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 48%),
-    radial-gradient(ellipse 70% 55% at 0% 100%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    radial-gradient(
+      ellipse 70% 55% at 0% 100%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    );
   background-size:
     16px 16px,
     100% 100%,
     100% 100%;
 }
 
-/* X — thread lines + mention pulse */
+/* X — diagonal lines (45°, 20px spacing) */
 .platform-card--x .platform-card__pattern {
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0,
-      transparent 13px,
-      rgba(255, 255, 255, 0.065) 13px,
-      rgba(255, 255, 255, 0.065) 14px
-    ),
-    radial-gradient(circle at 92% 18%, rgba(255, 255, 255, 0.1) 0%, transparent 28%),
-    radial-gradient(circle at 8% 85%, rgba(255, 255, 255, 0.06) 0%, transparent 22%);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 20px,
+    rgba(255, 255, 255, 0.08) 20px,
+    rgba(255, 255, 255, 0.08) 21.5px
+  );
 }
 
 /* Facebook — community ripple arcs */
 .platform-card--facebook .platform-card__pattern {
   background-image:
-    radial-gradient(ellipse 95% 70% at 100% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 52%),
-    radial-gradient(ellipse 60% 45% at 0% 100%, rgba(255, 255, 255, 0.08) 0%, transparent 48%),
+    radial-gradient(
+      ellipse 95% 70% at 100% 0%,
+      rgba(255, 255, 255, 0.16) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 60% 45% at 0% 100%,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 48%
+    ),
     repeating-radial-gradient(
       circle at 78% 22%,
       transparent 0,
-      transparent 20px,
-      rgba(255, 255, 255, 0.04) 20px,
-      rgba(255, 255, 255, 0.04) 21px
+      transparent 40px,
+      rgba(255, 255, 255, 0.075) 40px,
+      rgba(255, 255, 255, 0.075) 41.5px
     );
 }
 
@@ -628,27 +685,38 @@ select:disabled,
 }
 
 .platform-logo svg {
-  width: 100%;
-  height: 100%;
+  display: block;
   fill: currentColor;
 }
 
-.platform-logo--large {
-  width: 3.25rem;
-  height: 3.25rem;
-}
+/* Mobile — identical logo box + glyph for all 5 (must follow desktop size rules) */
+@media (max-width: 639px) {
+  .platform-logo,
+  .platform-logo--large,
+  .platform-logo--featured,
+  .platform-logo--compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+  }
 
-.platform-logo--featured {
-  width: 3rem;
-  height: 3rem;
-}
-
-.platform-logo--compact {
-  width: 2.5rem;
-  height: 2.5rem;
+  .platform-logo svg {
+    flex-shrink: 0;
+    width: 2.0625rem;
+    height: 2.0625rem;
+    max-width: none;
+    max-height: none;
+  }
 }
 
 @media (min-width: 640px) {
+  .platform-logo svg {
+    width: 100%;
+    height: 100%;
+  }
+
   .platform-logo--large {
     width: 3.5rem;
     height: 3.5rem;
@@ -664,3 +732,26 @@ select:disabled,
     height: 2.75rem;
   }
 }
+
+/* Pricing cards grid — equal height per row */
+.pricing-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 340px);
+  justify-content: center;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .pricing-cards {
+    grid-template-columns: repeat(2, 340px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pricing-cards {
+    grid-template-columns: repeat(3, 340px);
+    gap: 1rem;
+  }
+}
+

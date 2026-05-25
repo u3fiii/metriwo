@@ -12,6 +12,46 @@ function PlatformLogo({ Icon, className = 'h-4 w-4 shrink-0' }) {
   return <Icon className={className} aria-hidden />
 }
 
+function accountAvatarUrl(username) {
+  return `https://picsum.photos/seed/${encodeURIComponent(username)}/80/80`
+}
+
+function SearchAccountAvatar({ account, platform }) {
+  const [imgError, setImgError] = useState(false)
+  const src = account.avatar ?? accountAvatarUrl(account.username)
+  const { Icon: PlatformIcon, color } = platform
+
+  useEffect(() => {
+    setImgError(false)
+  }, [src])
+
+  return (
+    <div className="relative h-10 w-10 shrink-0">
+      {!imgError ? (
+        <img
+          src={src}
+          alt=""
+          className="h-10 w-10 rounded-full object-cover bg-zinc-100"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-white"
+          style={{ backgroundColor: color }}
+        >
+          {account.name.charAt(0)}
+        </span>
+      )}
+      <span
+        className="absolute -bottom-0.5 -right-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-white bg-zinc-100 shadow-sm ring-1 ring-zinc-200/90"
+        aria-hidden
+      >
+        <PlatformIcon className="h-2.5 w-2.5 shrink-0" style={{ color }} />
+      </span>
+    </div>
+  )
+}
+
 function useTypewriter(
   strings,
   { typingDelay = 45, deletingDelay = 25, pauseMs = 1200, switchDelay = 100 } = {},
@@ -51,29 +91,119 @@ function useTypewriter(
 
 const MOCK_ACCOUNTS = {
   instagram: [
-    { username: 'nike', name: 'Nike', followers: '306M' },
-    { username: 'natgeo', name: 'National Geographic', followers: '283M' },
-    { username: 'cristiano', name: 'Cristiano Ronaldo', followers: '651M' },
+    {
+      username: 'nike',
+      name: 'Nike',
+      followers: '306M',
+      avatar:
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'natgeo',
+      name: 'National Geographic',
+      followers: '283M',
+      avatar:
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'cristiano',
+      name: 'Cristiano Ronaldo',
+      followers: '651M',
+      avatar:
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=80&h=80&q=80',
+    },
   ],
   tiktok: [
-    { username: 'charlidamelio', name: "Charli D'Amelio", followers: '155M' },
-    { username: 'khaby.lame', name: 'Khabane Lame', followers: '162M' },
-    { username: 'bellapoarch', name: 'Bella Poarch', followers: '93M' },
+    {
+      username: 'charlidamelio',
+      name: "Charli D'Amelio",
+      followers: '155M',
+      avatar:
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'khaby.lame',
+      name: 'Khabane Lame',
+      followers: '162M',
+      avatar:
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'bellapoarch',
+      name: 'Bella Poarch',
+      followers: '93M',
+      avatar:
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80',
+    },
   ],
   linkedin: [
-    { username: 'microsoft', name: 'Microsoft', followers: '22M' },
-    { username: 'satyanadella', name: 'Satya Nadella', followers: '11M' },
-    { username: 'google', name: 'Google', followers: '32M' },
+    {
+      username: 'microsoft',
+      name: 'Microsoft',
+      followers: '22M',
+      avatar:
+        'https://images.unsplash.com/photo-1614680433971-5c55b1d816f0?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'satyanadella',
+      name: 'Satya Nadella',
+      followers: '11M',
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'google',
+      name: 'Google',
+      followers: '32M',
+      avatar:
+        'https://images.unsplash.com/photo-1522075469751-3a6694fb9642?auto=format&fit=crop&w=80&h=80&q=80',
+    },
   ],
   facebook: [
-    { username: 'meta', name: 'Meta', followers: '110M' },
-    { username: 'cocacola', name: 'Coca-Cola', followers: '107M' },
-    { username: 'nike', name: 'Nike', followers: '39M' },
+    {
+      username: 'meta',
+      name: 'Meta',
+      followers: '110M',
+      avatar:
+        'https://images.unsplash.com/photo-1634942537034-2531766767d1?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'cocacola',
+      name: 'Coca-Cola',
+      followers: '107M',
+      avatar:
+        'https://images.unsplash.com/photo-1564865878688-9a2444450423?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'nike',
+      name: 'Nike',
+      followers: '39M',
+      avatar:
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=80&h=80&q=80',
+    },
   ],
   x: [
-    { username: 'elonmusk', name: 'Elon Musk', followers: '198M' },
-    { username: 'nasa', name: 'NASA', followers: '82M' },
-    { username: 'openai', name: 'OpenAI', followers: '4.2M' },
+    {
+      username: 'elonmusk',
+      name: 'Elon Musk',
+      followers: '198M',
+      avatar:
+        'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'nasa',
+      name: 'NASA',
+      followers: '82M',
+      avatar:
+        'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=80&h=80&q=80',
+    },
+    {
+      username: 'openai',
+      name: 'OpenAI',
+      followers: '4.2M',
+      avatar:
+        'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=80&h=80&q=80',
+    },
   ],
 }
 
@@ -112,10 +242,14 @@ function getDisplayAccounts(query, platformId) {
       username,
       name: `${q}${template.suffix}`,
       followers: template.followers,
+      avatar: accountAvatarUrl(username),
     })
   }
 
-  return results.slice(0, 4)
+  return results.slice(0, 4).map((account) => ({
+    ...account,
+    avatar: account.avatar ?? accountAvatarUrl(account.username),
+  }))
 }
 
 export default function Hero() {
@@ -233,9 +367,9 @@ export default function Hero() {
             ref={searchRef}
             className="relative z-30 mt-5 w-full max-w-[445px] overflow-visible sm:mt-6"
           >
-            <div className="flex w-full items-center gap-2 rounded-lg bg-[#ffffff60] py-2 pl-4 pr-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-zinc-200/80 transition-[background-color,box-shadow,ring-color,ring-width] duration-300 ease-in-out hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)] hover:ring-[3px] hover:ring-zinc-300/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5B3AFF]">
+            <div className="group flex w-full items-center gap-2 rounded-[12px] bg-[#ffffff60] py-2 pl-4 pr-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-zinc-200/80 transition-[background-color,box-shadow,ring-color,ring-width] duration-300 ease-in-out hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)] hover:ring-[3px] hover:ring-zinc-300/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5B3AFF]">
               <Search
-                className="h-[18px] w-[18px] shrink-0 text-zinc-400"
+                className="h-[18px] w-[18px] shrink-0 text-zinc-600 transition-colors duration-300 ease-out group-focus-within:text-zinc-300"
                 strokeWidth={2}
                 aria-hidden
               />
@@ -247,7 +381,7 @@ export default function Hero() {
                   if (query.trim()) setAccountsOpen(true)
                 }}
                 placeholder={searchPlaceholder}
-                className="min-w-0 flex-1 bg-transparent py-2 text-sm text-zinc-900 outline-none placeholder:font-light placeholder:text-zinc-400"
+                className="min-w-0 flex-1 bg-transparent py-2 text-sm text-zinc-900 outline-none transition-colors duration-300 ease-out placeholder:font-light placeholder:text-zinc-600 placeholder:transition-colors group-focus-within:placeholder:text-zinc-300"
               />
 
               <div ref={platformRef} className="relative shrink-0">
@@ -257,7 +391,7 @@ export default function Hero() {
                     setPlatformOpen((o) => !o)
                     setAccountsOpen(false)
                   }}
-                  className="flex items-center gap-2 rounded-lg bg-[#ffffffa4] px-3.5 py-2 text-sm font-medium text-zinc-600 transition-opacity hover:opacity-90"
+                  className="flex items-center gap-2 rounded-[8px] bg-[#ffffffa4] px-3.5 py-2 text-sm font-medium text-zinc-600 transition-opacity hover:opacity-90"
                 >
                   <PlatformLogo
                     Icon={platform.Icon}
@@ -311,12 +445,11 @@ export default function Hero() {
                       onClick={() => selectAccount(account)}
                       className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-zinc-100"
                     >
-                      <span
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
-                        style={{ backgroundColor: platform.color }}
-                      >
-                        {account.name.charAt(0)}
-                      </span>
+                      <SearchAccountAvatar
+                        key={`${account.username}-${platform.id}`}
+                        account={account}
+                        platform={platform}
+                      />
                       <span className="min-w-0 flex-1 text-left">
                         <span className="block truncate text-sm font-semibold text-zinc-900">
                           {account.name}

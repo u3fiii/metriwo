@@ -124,12 +124,19 @@ export default function Navbar() {
   }, [activeIndex, moveDotToLink])
 
   useEffect(() => {
+    const desktopMq = window.matchMedia('(min-width: 768px)')
+
     const onScroll = () => {
       const y = window.scrollY
 
-      if (y > lastScrollY.current && y > 8) {
-        setScrolledDown(true)
-      } else if (y < lastScrollY.current) {
+      // Shrink-on-scroll only on desktop — mobile scroll bounce was resizing the bar
+      if (desktopMq.matches) {
+        if (y > lastScrollY.current + 4 && y > 16) {
+          setScrolledDown(true)
+        } else if (y < lastScrollY.current - 4 || y <= 8) {
+          setScrolledDown(false)
+        }
+      } else {
         setScrolledDown(false)
       }
 
@@ -173,14 +180,14 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed left-0 right-0 z-50 px-4 transition-all duration-500 ease-out sm:px-6 ${
-        scrolledDown ? 'top-3' : 'top-5'
-      }`}
+      className={`fixed inset-x-0 z-50 w-full min-w-0 px-4 transition-[top] duration-500 ease-out sm:px-6 ${
+        scrolledDown ? 'md:top-3' : ''
+      } top-5`}
     >
-      <div ref={mobileNavRef} className="relative mx-auto max-w-[50.2rem]">
+      <div ref={mobileNavRef} className="relative mx-auto w-full min-w-0 max-w-[50.2rem]">
         <div
-          className={`relative z-10 flex items-center justify-between rounded-full border border-white/60 bg-white/50 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-500 ease-out ${
-            scrolledDown ? 'scale-95' : ''
+          className={`relative z-10 flex min-w-0 w-full items-center justify-between rounded-full border border-white/60 bg-white/50 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-xl backdrop-saturate-150 transition-[transform,box-shadow] duration-500 ease-out ${
+            scrolledDown ? 'md:scale-95' : ''
           }`}
         >
           <a

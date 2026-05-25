@@ -79,7 +79,7 @@ export default function FeatureTabs() {
           <div className="relative z-10">
             <div className="flex justify-center px-6 pt-6 pb-5 sm:px-8 lg:px-10 lg:pt-8">
               <div
-                className="inline-flex max-w-full flex-wrap items-center justify-center gap-0.5 rounded-[10px] border-2 border-black p-1"
+                className="inline-flex max-w-full flex-wrap items-center justify-center gap-0.5 rounded-[10px] bg-black/5 p-1"
                 role="tablist"
                 aria-label="Feature categories"
               >
@@ -99,15 +99,15 @@ export default function FeatureTabs() {
                       initial={false}
                       animate={{ scale: isActive ? [1, 0.97, 1] : 1 }}
                       transition={TAB_ACTIVATE_TRANSITION}
-                      className={`flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium transition-colors duration-300 ease-out ${
+                      className={`group flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium transition-colors duration-300 ease-out ${
                         isActive
-                          ? 'bg-black text-white'
-                          : 'bg-transparent text-zinc-900 hover:bg-black/5'
+                          ? 'bg-black text-white shadow-sm'
+                          : 'bg-transparent text-zinc-700 hover:bg-black/10 hover:text-zinc-900'
                       }`}
                     >
                       <TabIcon
                         className={`h-3.5 w-3.5 shrink-0 transition-colors duration-300 ${
-                          isActive ? 'text-white' : 'text-zinc-900'
+                          isActive ? 'text-white' : 'text-zinc-600 group-hover:text-zinc-900'
                         }`}
                         strokeWidth={2.25}
                         aria-hidden

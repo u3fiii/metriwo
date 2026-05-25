@@ -255,7 +255,7 @@ function MobileDashboardHeader() {
   )
 }
 
-const SPRING_CONFIG = { stiffness: 60, damping: 20 }
+const SPRING_CONFIG = { stiffness: 60, damping: 60 }
 
 export default function HeroDashboard() {
   const scalerRef = useRef(null)

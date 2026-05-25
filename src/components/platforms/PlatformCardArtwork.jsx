@@ -20,7 +20,10 @@ export default function PlatformCardArtwork({ platform, compact = false, large =
       : ' platform-logo--featured'
 
   return (
-    <div className={`platform-logo${sizeClass}`} aria-hidden>
+    <div
+      className={`platform-logo platform-logo--${platform}${sizeClass}`}
+      aria-hidden
+    >
       <Icon />
     </div>
   )

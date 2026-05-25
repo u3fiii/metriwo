@@ -6,22 +6,25 @@ function PlatformCardCopy({ card, compact = false }) {
   const descClass = card.textOnDark ? 'text-white/90' : 'text-zinc-800'
   const titleClass = compact
     ? 'text-base font-bold leading-snug sm:text-lg'
-    : 'text-lg font-bold leading-snug sm:text-xl'
+    : 'text-base font-bold leading-snug sm:text-lg sm:text-xl'
+  const mobileDescription = card.descriptionMobile ?? card.description
 
   return (
-    <div className={`platform-card__copy min-w-0 ${textClass}`}>
+    <div className={`platform-card__copy min-w-0 flex flex-col sm:flex-1 ${textClass}`}>
       <h3 className={titleClass}>{card.title}</h3>
       <p
-        className={`mt-1.5 text-xs font-normal leading-relaxed sm:text-sm ${descClass}${compact ? ' line-clamp-3' : ''}`}
+        className={`mt-1.5 line-clamp-2 text-xs font-normal leading-snug sm:text-sm sm:leading-relaxed ${compact ? 'sm:line-clamp-3' : 'sm:line-clamp-none'} ${descClass}`}
       >
-        {card.description}
+        <span className="sm:hidden">{mobileDescription}</span>
+        <span className="hidden sm:inline">{card.description}</span>
       </p>
     </div>
   )
 }
 
 function PlatformCard({ card, compact = false }) {
-  const logoLarge = !compact && (card.id === 'instagram' || card.id === 'tiktok')
+  const logoLarge =
+    !compact && (card.id === 'instagram' || card.id === 'tiktok')
 
   return (
     <article
