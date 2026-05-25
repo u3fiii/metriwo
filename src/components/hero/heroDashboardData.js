@@ -1,3 +1,14 @@
+/** Fictional Instagram account shown on the hero phone mockup. */
+export const MOBILE_IG_ACCOUNT = {
+  name: 'Lume Studio',
+  handle: 'lumestudio',
+  avatar:
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80',
+  avatarFallback:
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80',
+  initials: 'LS',
+}
+
 export const SPARK_INIT = [40, 55, 45, 70, 62, 85, 100]
 
 export const MOBILE_CHART_HEIGHTS = [42, 60, 50, 75, 65, 88, 100]

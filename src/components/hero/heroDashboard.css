@@ -15,6 +15,26 @@
   transform-origin: top center;
 }
 
+.hero-tile-parallax-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-tile-parallax-layer--front {
+  z-index: 2;
+}
+
+.hero-tile-parallax-layer--mid {
+  z-index: 3;
+}
+
+.hero-tile-parallax-layer--mid .tile-card {
+  pointer-events: auto;
+}
+
 .hero-tile-scene .tile-ring-svg {
   position: absolute;
   inset: 0;
@@ -86,14 +106,17 @@
   overflow: hidden;
 }
 
-.hero-tile-scene .tile-db-nav {
+.hero-tile-scene .tile-db-header {
   background: #fff;
-  padding: 8px 10px 6px;
   border-bottom: 1px solid #edebff;
+  flex-shrink: 0;
+}
+
+.hero-tile-scene .tile-db-brand {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
+  padding: 6px 8px 4px;
 }
 
 .hero-tile-scene .tile-db-logo-row {
@@ -109,45 +132,120 @@
   letter-spacing: -0.3px;
 }
 
-.hero-tile-scene .tile-db-nav-right {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.hero-tile-scene .tile-db-notif {
-  width: 18px;
-  height: 18px;
-  border-radius: 6px;
+.hero-tile-scene .tile-db-brand-tag {
+  font-size: 5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #5b3aff;
   background: #f0edff;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.hero-tile-scene .tile-db-ig-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px 8px 6px;
+  border-top: 1px solid #f5f3ff;
+}
+
+.hero-tile-scene .tile-db-account {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.hero-tile-scene .tile-db-ig-ring {
+  flex-shrink: 0;
+  padding: 1.5px;
+  border-radius: 50%;
+  background: linear-gradient(
+    45deg,
+    #f09433,
+    #e6683c,
+    #dc2743,
+    #cc2366,
+    #bc1888
+  );
+}
+
+.hero-tile-scene .tile-db-ig-avatar {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  object-fit: cover;
+  background: #f0eef8;
+}
+
+.hero-tile-scene .tile-db-ig-avatar--fallback {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-}
-
-.hero-tile-scene .tile-db-notif::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #5b3aff;
-}
-
-.hero-tile-scene .tile-db-ava {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #5b3aff, #9b6bff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 5.5px;
+  font-size: 6px;
   font-weight: 700;
   color: #fff;
+  background: linear-gradient(135deg, #e1306c, #fd1d1d, #833ab4);
+}
+
+.hero-tile-scene .tile-db-account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.hero-tile-scene .tile-db-account-name {
+  font-size: 7px;
+  font-weight: 700;
+  color: #1a1433;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-tile-scene .tile-db-account-meta {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 5.5px;
+  font-weight: 600;
+  color: #9b97b2;
+  line-height: 1;
+}
+
+.hero-tile-scene .tile-db-account-meta span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-tile-scene .tile-db-ig-icon {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  color: #e1306c;
+}
+
+.hero-tile-scene .tile-db-ig-label {
+  flex-shrink: 0;
+  font-size: 5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e1306c;
+  background: #fff0f6;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
 }
 
 .hero-tile-scene .tile-db-kpis {
@@ -219,24 +317,22 @@
   border-radius: 10px;
 }
 
-.hero-tile-scene .tile-db-bars-card {
+.hero-tile-scene .tile-db-chart-card {
   background: #fff;
   border-radius: 8px;
   padding: 6px 6px 4px;
   border: 1px solid #edebff;
 }
 
-.hero-tile-scene .tile-db-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
+.hero-tile-scene .tile-db-line-chart {
+  display: block;
+  width: 100%;
   height: 32px;
+  overflow: visible;
 }
 
-.hero-tile-scene .tile-db-bar {
-  flex: 1;
-  border-radius: 2px 2px 0 0;
-  transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+.hero-tile-scene .tile-db-line-end {
+  filter: drop-shadow(0 0 2px rgba(29, 158, 117, 0.45));
 }
 
 .hero-tile-scene .tile-db-xlbls {
