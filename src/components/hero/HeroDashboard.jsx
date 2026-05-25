@@ -145,7 +145,11 @@ function MobileWeeklyLineChart({ values }) {
             transition={{
               cx: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
               cy: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-              scale: { delay: 0.12 * i + 0.45, duration: 0.35, ease: [0.34, 1.56, 0.64, 1] },
+              scale: {
+                delay: 0.12 * i + 0.45,
+                duration: 0.35,
+                ease: [0.34, 1.56, 0.64, 1],
+              },
               opacity: { delay: 0.12 * i + 0.45, duration: 0.35 },
             }}
           />
@@ -167,7 +171,12 @@ function MobileWeeklyLineChart({ values }) {
               cx: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
               cy: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
               scale: { delay: 1.2, duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
-              opacity: { delay: 1.2, duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+              opacity: {
+                delay: 1.2,
+                duration: 2.4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              },
             }}
           />
         )}
@@ -227,7 +236,9 @@ function MobileDashboardHeader() {
                 }}
               />
             ) : (
-              <div className="tile-db-ig-avatar tile-db-ig-avatar--fallback">{initials}</div>
+              <div className="tile-db-ig-avatar tile-db-ig-avatar--fallback">
+                {initials}
+              </div>
             )}
           </div>
           <div className="tile-db-account-text">
@@ -518,11 +529,12 @@ export default function HeroDashboard() {
             <circle
               cx="290"
               cy="290"
-              r="146"
+              r="132"
               fill="none"
               stroke="#d4d4d8"
-              strokeWidth="1.5"
-              strokeDasharray="18 12"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray="0 15"
             />
           </svg>
           <svg
@@ -536,8 +548,9 @@ export default function HeroDashboard() {
               r="240"
               fill="none"
               stroke="#d4d4d8"
-              strokeWidth="1.5"
-              strokeDasharray="22 14"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray="0 19"
             />
           </svg>
         </motion.div>
