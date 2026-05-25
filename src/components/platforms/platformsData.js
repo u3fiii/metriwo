@@ -11,61 +11,51 @@ export const PLATFORM_BRAND_BACKGROUNDS = {
 export const PLATFORMS_FEATURED = [
   {
     id: 'instagram',
-    layout: 'vertical-art-top',
     bgGradient: PLATFORM_BRAND_BACKGROUNDS.instagram,
     textOnDark: true,
     emphasized: true,
     title: 'Master Instagram Growth',
     description:
       'Grow engagement with smart scheduling and auto-replies. Track story performance, optimize posting times, and convert comments into DMs automatically.',
-    artwork: 'instagram-stickers',
   },
   {
     id: 'tiktok',
-    layout: 'horizontal',
     bgGradient: PLATFORM_BRAND_BACKGROUNDS.tiktok,
     textOnDark: true,
     emphasized: true,
     title: 'Dominate TikTok Trends',
     description:
       'Grow engagement with smart scheduling and auto-replies. Track story performance, optimize posting times, and convert comments into DMs automatically.',
-    artwork: 'tiktok-priority',
   },
 ]
 
 export const PLATFORMS_SECONDARY = [
   {
     id: 'linkedin',
-    layout: 'vertical-text-top',
     bg: PLATFORM_BRAND_BACKGROUNDS.linkedin,
     textOnDark: true,
     emphasized: false,
-    title: 'Grow on LinkedIn',
+    title: 'Build authority on LinkedIn',
     description:
-      'Schedule posts, track impressions, and engage professionals from one dashboard built for B2B creators.',
-    artwork: 'linkedin-metrics',
+      'Publish with confidence, track what resonates with professionals, and turn profile views into real opportunities—all from one place.',
   },
   {
     id: 'x',
-    layout: 'vertical-art-top',
     bg: PLATFORM_BRAND_BACKGROUNDS.x,
     textOnDark: true,
     emphasized: false,
     title: 'Own the conversation on X',
     description:
       'Publish threads, monitor mentions, and reply in real time without leaving Metriwo.',
-    artwork: 'x-threads',
   },
   {
     id: 'facebook',
-    layout: 'vertical-art-top',
     bg: PLATFORM_BRAND_BACKGROUNDS.facebook,
     textOnDark: true,
     emphasized: false,
-    title: 'Grow your Facebook community',
+    title: 'Turn fans into loyal customers',
     description:
-      'Grow engagement with smart scheduling and auto-replies. Track story performance, optimize posting times, and convert comments into DMs automatically.',
-    artwork: 'facebook-controls',
+      'Schedule Page posts, measure reach and engagement, and keep conversations going so your community keeps coming back.',
   },
 ]
 
